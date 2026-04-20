@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# 大文件：视频本地存放，不入库
+src/picture/*.mp4
+src/picture/*.zip
+src/picture.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
