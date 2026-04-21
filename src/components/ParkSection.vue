@@ -1,5 +1,14 @@
 <template>
   <section id="park" class="relative py-28 bg-cosmic overflow-hidden">
+    <!-- Parallax bg image -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <img :src="parkBg" alt=""
+        class="absolute w-full h-[120%] object-cover object-center -top-[10%]"
+        style="will-change: transform; opacity: 0.12;
+               mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.8) 80%, transparent 100%);
+               -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.8) 80%, transparent 100%)"
+        ref="parallaxImg" />
+    </div>
     <div class="absolute right-0 top-1/3 w-80 h-80 bg-cyber/5 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-6">
@@ -74,6 +83,27 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import parkBg from '../picture/微信图片_20260420035333_450_4.jpg'
+
+const parallaxImg = ref(null)
+let ticking = false
+
+function onScroll() {
+  if (!parallaxImg.value || ticking) return
+  ticking = true
+  requestAnimationFrame(() => {
+    const section = parallaxImg.value.closest('section')
+    const rect = section.getBoundingClientRect()
+    const progress = -rect.top / (rect.height + window.innerHeight)
+    parallaxImg.value.style.transform = `translateY(${progress * 60}px)`
+    ticking = false
+  })
+}
+
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onUnmounted(() => window.removeEventListener('scroll', onScroll))
+
 const zones = [
   { name: 'SC电竞俱乐部', desc: '职业战队训练与赛事运营核心', icon: '🏆', color: '#00D4FF' },
   { name: '直播基地', desc: '高标准直播孵化与内容制作中心', icon: '📡', color: '#1A6FFF' },

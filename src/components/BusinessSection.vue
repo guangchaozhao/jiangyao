@@ -1,7 +1,10 @@
+<script setup>
+import xingchenLogo from '../picture/xingchen.png'
+</script>
+
 <template>
   <section id="business" class="relative py-28 bg-[#060D1F] grid-bg">
     <div class="max-w-7xl mx-auto px-6">
-      <!-- Header -->
       <div class="text-center mb-16 slide-up">
         <span class="section-tag font-esports text-[11px]">04 / 核心业务</span>
         <h2 class="font-display font-bold text-4xl md:text-5xl text-white mt-4">
@@ -10,96 +13,93 @@
         <div class="cyber-divider w-24 mx-auto mt-6"></div>
       </div>
 
-      <!-- Main businesses: 2 big cards -->
-      <div class="grid md:grid-cols-2 gap-6 mb-8">
-        <div v-for="(biz, i) in mainBiz" :key="biz.title"
-          class="glass-card rounded-sm p-8 relative hud-corner hover:border-cyber/50 transition-all duration-300 group slide-up"
-          :class="`delay-${(i+1)*100}`">
-          <div class="flex items-start gap-4 mb-6">
-            <div class="w-12 h-12 rounded-sm flex items-center justify-center text-2xl"
-              :style="{ background: biz.color + '20', border: `1px solid ${biz.color}40` }">
-              {{ biz.icon }}
-            </div>
-            <div>
-              <h3 class="font-display font-bold text-white text-xl">{{ biz.title }}</h3>
-              <p class="text-cyber text-sm font-body mt-1">{{ biz.subtitle }}</p>
-            </div>
-          </div>
-          <p class="text-slate-400 font-body text-sm mb-5">{{ biz.desc }}</p>
-          <div class="flex flex-wrap gap-2">
-            <span v-for="tag in biz.tags" :key="tag"
-              class="text-xs px-3 py-1 rounded-sm bg-white/5 border border-white/10 text-slate-300 font-body">
-              {{ tag }}
-            </span>
-          </div>
-        </div>
-      </div>
+      <!-- Bento Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-auto">
 
-      <!-- 3 platform cards -->
-      <div class="grid md:grid-cols-3 gap-6">
-        <div v-for="(plat, i) in platforms" :key="plat.title"
-          class="glass-card rounded-sm p-6 hover:border-cyber/40 transition-all duration-300 slide-up"
-          :class="`delay-${(i+1)*100}`">
-          <div class="w-10 h-10 rounded-sm mb-4 flex items-center justify-center text-xl"
-            :style="{ background: plat.color + '20', border: `1px solid ${plat.color}40` }">
-            {{ plat.icon }}
+        <!-- 1. Star Club 大卡 (2/3宽) -->
+        <div class="md:col-span-4 glass-card neon-hover rounded-sm p-8 relative overflow-hidden hud-corner slide-up">
+          <div class="absolute top-0 right-0 w-48 h-48 bg-cyber/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-3 mb-5">
+              <img :src="xingchenLogo" alt="星辰电竞" class="w-12 h-12 object-contain flex-shrink-0" />
+              <div>
+                <h3 class="font-esports font-bold text-white text-xl">Star Club 电竞俱乐部</h3>
+                <p class="text-cyber text-xs font-body mt-0.5">致力于打造行业标杆的「百年电竞俱乐部」</p>
+              </div>
+            </div>
+            <p class="text-slate-400 font-body text-sm leading-relaxed mb-5">
+              三十年冠军经验团队领衔，以中国电竞开拓者马天元（MTY）为核心，联合星竞威武集团顶级资源，
+              组建热门项目职业战队，构建完善青训体系，自主策划品牌赛事，打造世界顶级竞技IP。
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="t in ['职业战队', '青训体系', '品牌赛事', '30年冠军经验', 'IP运营']" :key="t"
+                class="text-xs px-3 py-1 rounded-sm bg-cyber/8 border border-cyber/20 text-star font-body">{{ t }}</span>
+            </div>
           </div>
-          <h3 class="font-display font-bold text-white text-lg mb-2">{{ plat.title }}</h3>
-          <p class="text-slate-400 text-sm font-body mb-4">{{ plat.desc }}</p>
-          <ul class="space-y-1.5">
-            <li v-for="item in plat.items" :key="item"
-              class="flex items-center gap-2 text-xs text-slate-300 font-body">
-              <span class="w-1 h-1 rounded-full bg-cyber flex-shrink-0"></span>
-              {{ item }}
-            </li>
-          </ul>
         </div>
+
+        <!-- 2. Doud AI 小卡 (1/3宽) -->
+        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-100">
+          <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-electric/10 rounded-full blur-2xl"></div>
+          <div class="w-10 h-10 rounded-sm bg-electric/15 border border-electric/30 flex items-center justify-center text-xl mb-4">🤖</div>
+          <h3 class="font-esports font-bold text-white text-lg mb-2">Doud AI</h3>
+          <p class="text-cyber text-xs font-body mb-3">超级视频工厂</p>
+          <p class="text-slate-400 text-xs font-body leading-relaxed">
+            中国AI技术开拓者，资深专家团队，助力政企单位节能增效，提供AI时代技术服务与人才培养。
+          </p>
+        </div>
+
+        <!-- 3. 教育学院 窄高卡 -->
+        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-200">
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500/50 via-cyber/50 to-transparent"></div>
+          <div class="w-10 h-10 rounded-sm bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-xl mb-4">🎓</div>
+          <h3 class="font-esports font-bold text-white text-lg mb-2">电子竞技教育学院</h3>
+          <p class="text-slate-400 text-xs font-body leading-relaxed mb-4">
+            打造产教融合的电竞人才培养标杆，深度链接高校资源，构建专业教育品牌，推行项目指导式教学。
+          </p>
+          <div class="space-y-2">
+            <div v-for="f in ['专业课程体系', '高校资源对接', '实战项目驱动']" :key="f"
+              class="flex items-center gap-2 text-xs text-slate-300 font-body">
+              <span class="w-1 h-1 rounded-full bg-purple-400 flex-shrink-0"></span>{{ f }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. 人才经纪 中卡 -->
+        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-200">
+          <div class="absolute -bottom-4 -right-4 w-20 h-20 bg-cyber/8 rounded-full blur-2xl"></div>
+          <div class="w-10 h-10 rounded-sm bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-xl mb-4">🌟</div>
+          <h3 class="font-esports font-bold text-white text-lg mb-2">人才经纪管理</h3>
+          <p class="text-slate-400 text-xs font-body leading-relaxed mb-4">
+            建设高标准直播基地，孵化优质直播团队，搭建跨境电商直播平台，打通商业变现全链路。
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="text-center p-2 bg-white/3 rounded-sm">
+              <div class="font-esports font-bold text-cyber text-sm">500+</div>
+              <div class="text-slate-500 text-[10px] font-body">主播管理</div>
+            </div>
+            <div class="text-center p-2 bg-white/3 rounded-sm">
+              <div class="font-esports font-bold text-cyber text-sm">1300万</div>
+              <div class="text-slate-500 text-[10px] font-body">月度流水</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. 产业融合平台 大卡 (2/3宽) -->
+        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-300">
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-electric/50 to-transparent"></div>
+          <div class="w-10 h-10 rounded-sm bg-electric/15 border border-electric/30 flex items-center justify-center text-xl mb-4">🔗</div>
+          <h3 class="font-esports font-bold text-white text-lg mb-2">电竞+产业融合</h3>
+          <p class="text-slate-400 text-xs font-body leading-relaxed mb-4">
+            全生命周期运营支撑，打破信息壁垒，搭建产业资源对接平台，促进企业间深度合作。
+          </p>
+          <div class="flex flex-wrap gap-1.5">
+            <span v-for="s in ['AI服务', '法务', '财务', '人力', '资源对接', '配套保障']" :key="s"
+              class="text-[10px] px-2 py-0.5 bg-electric/10 border border-electric/20 text-star rounded-sm font-body">{{ s }}</span>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 </template>
-
-<script setup>
-const mainBiz = [
-  {
-    icon: '⚔️',
-    title: 'Star Club 电竞俱乐部',
-    subtitle: '致力于打造行业标杆的「百年电竞俱乐部」',
-    desc: '三十年冠军经验团队领衔，组建热门项目职业战队，构建完善青训体系，自主策划品牌赛事。',
-    tags: ['职业战队', '青训体系', '品牌赛事', '30年经验'],
-    color: '#00D4FF',
-  },
-  {
-    icon: '🤖',
-    title: 'Doud AI 超级视频工厂',
-    subtitle: '以核心技术助力政企单位节能增效',
-    desc: '中国AI技术开拓者，资深AI专家团队，成熟运营理念，提供AI时代技术服务和人才培养。',
-    tags: ['AI模型构建', '人才培养', '政企服务', '技术开拓'],
-    color: '#1A6FFF',
-  },
-]
-
-const platforms = [
-  {
-    icon: '🎓',
-    title: '电子竞技教育学院',
-    desc: '打造产教融合的电竞人才培养标杆',
-    items: ['构建专业教育品牌', '深度链接高校资源', '项目指导式教学'],
-    color: '#7C3AED',
-  },
-  {
-    icon: '🌟',
-    title: '人才经纪管理中心',
-    desc: '构建独立IP生态，打通商业变现全链路',
-    items: ['高标准直播基地', '孵化优质直播团队', '跨境电商直播平台'],
-    color: '#00D4FF',
-  },
-  {
-    icon: '🔗',
-    title: '电竞+产业融合平台',
-    desc: '全生命周期运营支撑，助力合作企业高效发展',
-    items: ['AI服务 / 法务 / 财务', '产业资源对接平台', '完善配套设施'],
-    color: '#1A6FFF',
-  },
-]
-</script>

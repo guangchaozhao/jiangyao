@@ -16,11 +16,11 @@
 
         <!-- Logo area -->
         <div class="logo-wrap">
-          <div class="logo-sub" :class="{ 'logo-sub--in': phase >= 2 }">
-            STARS ESPORTS · INDUSTRIAL PARK
+          <!-- 星辰电竞 Logo -->
+          <div class="xingchen-wrap" :class="{ 'xingchen-wrap--in': phase >= 2 }">
+            <img :src="xingchenLogo" alt="星辰电竞" class="xingchen-img" />
           </div>
-          <div
-            class="logo-main"
+          <div class="logo-main"
             :class="{ 'logo-main--in': phase >= 2 }"
             :data-text="logoText"
           >{{ logoText }}</div>
@@ -58,6 +58,8 @@ import { ref, onMounted } from 'vue'
 
 defineEmits(['done'])
 
+import xingchenLogo from '../picture/xingchen.png'
+
 const visible = ref(true)
 const phase = ref(0)
 const progress = ref(0)
@@ -65,14 +67,14 @@ const logoText = '星辰电竞'
 
 onMounted(() => {
   // Phase 1: brackets appear
-  setTimeout(() => { phase.value = 1 }, 200)
+  setTimeout(() => { phase.value = 1 }, 100)
 
   // Phase 2: logo + progress bar appear
-  setTimeout(() => { phase.value = 2 }, 600)
+  setTimeout(() => { phase.value = 2 }, 350)
 
   // Progress animation
   setTimeout(() => {
-    const duration = 1600
+    const duration = 900
     const start = performance.now()
     function tick(now) {
       const t = Math.min((now - start) / duration, 1)
@@ -84,13 +86,13 @@ onMounted(() => {
   }, 700)
 
   // Phase 3: slogan
-  setTimeout(() => { phase.value = 3 }, 1200)
+  setTimeout(() => { phase.value = 3 }, 750)
 
   // Phase 4: curtains split open
-  setTimeout(() => { phase.value = 4 }, 2500)
+  setTimeout(() => { phase.value = 4 }, 1500)
 
   // Hide loader after curtains open
-  setTimeout(() => { visible.value = false }, 3300)
+  setTimeout(() => { visible.value = false }, 2100)
 })
 </script>
 
@@ -202,6 +204,24 @@ onMounted(() => {
   transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
 }
 .logo-sub--in { opacity: 1; transform: translateY(0); }
+
+/* Xingchen logo */
+.xingchen-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: scale(0.8) translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.xingchen-wrap--in { opacity: 1; transform: scale(1) translateY(0); }
+.xingchen-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 8px;
+  filter: drop-shadow(0 0 16px rgba(220,38,38,0.6));
+}
 
 .logo-main {
   font-family: 'Orbitron', 'Space Grotesk', sans-serif;

@@ -24,6 +24,7 @@
               :alt="member.name"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               :style="{ objectPosition: member.pos || 'center top' }"
+              loading="lazy"
             />
             <!-- Gradient: only bottom 40% fades to card color, top stays clear -->
             <div class="absolute inset-0"

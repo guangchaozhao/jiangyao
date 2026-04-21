@@ -15,14 +15,14 @@
       <!-- Economic stats: 4 big count-up numbers -->
       <div ref="statsRef" class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-20">
         <div v-for="(stat, i) in economicStats" :key="stat.label"
-          class="glass-card neon-hover rounded-sm p-8 text-center relative hud-corner slide-up"
+          class="glass-card neon-hover rounded-sm p-4 sm:p-8 text-center relative hud-corner slide-up"
           :class="`delay-${(i+1)*100}`">
           <!-- Accent top line -->
           <div class="absolute top-0 left-1/4 right-1/4 h-px"
             :style="{ background: `linear-gradient(90deg, transparent, ${stat.color}, transparent)` }">
           </div>
 
-          <div class="stat-number text-5xl md:text-6xl mb-2"
+          <div class="stat-number text-3xl sm:text-5xl md:text-6xl mb-2"
             :style="{ background: `linear-gradient(135deg, ${stat.color}, #ffffff)`,
                       '-webkit-background-clip': 'text', '-webkit-text-fill-color': 'transparent',
                       'background-clip': 'text' }">

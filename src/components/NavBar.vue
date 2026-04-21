@@ -5,36 +5,33 @@
   >
     <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
       <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 relative">
-          <div class="absolute inset-0 border-2 border-cyber rotate-45 animate-pulse"></div>
-          <div class="absolute inset-1 bg-electric/30 rotate-45"></div>
-          <span class="absolute inset-0 flex items-center justify-center text-cyber font-display font-bold text-xs">SC</span>
-        </div>
-        <div>
-          <div class="font-display font-bold text-white text-sm leading-tight">星辰电子竞技</div>
-          <div class="text-cyber text-[10px] tracking-widest uppercase">Stars Esports</div>
-        </div>
-      </div>
+      <a href="#" class="flex items-center gap-2 cursor-pointer">
+        <img :src="jiangyaoLogo" alt="江曜擎天" class="h-9 w-auto object-contain" />
+      </a>
 
       <!-- Nav links -->
-      <div class="hidden md:flex items-center gap-8">
+      <div class="hidden md:flex items-center gap-6 lg:gap-8">
         <a v-for="item in navItems" :key="item.href" :href="item.href"
-          class="text-sm text-slate-400 hover:text-cyber transition-colors duration-200 cursor-pointer font-body tracking-wide">
+          class="relative text-sm transition-colors duration-200 cursor-pointer font-body tracking-wide py-1 group"
+          :class="activeSection === item.id ? 'text-cyber' : 'text-slate-400 hover:text-white'">
           {{ item.label }}
+          <!-- Active underline -->
+          <span class="absolute bottom-0 left-0 h-px bg-cyber transition-all duration-300"
+            :class="activeSection === item.id ? 'w-full shadow-[0_0_6px_rgba(0,212,255,0.8)]' : 'w-0 group-hover:w-full opacity-50'">
+          </span>
         </a>
       </div>
 
       <!-- CTA -->
       <a href="#contact"
-        class="hidden md:flex items-center gap-2 px-5 py-2 border border-cyber/50 text-cyber text-sm font-display font-medium
-               hover:bg-cyber/10 transition-all duration-200 rounded-sm cursor-pointer">
+        class="hidden md:flex items-center gap-2 px-4 py-2 border border-cyber/50 text-cyber text-sm font-display font-medium
+               hover:bg-cyber/10 transition-all duration-200 rounded-sm cursor-pointer flex-shrink-0">
         <span class="w-1.5 h-1.5 bg-cyber rounded-full animate-pulse"></span>
         合作洽谈
       </a>
 
       <!-- Mobile menu button -->
-      <button @click="mobileOpen = !mobileOpen" class="md:hidden text-cyber">
+      <button @click="mobileOpen = !mobileOpen" class="md:hidden text-cyber p-1">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path v-if="!mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -43,37 +40,80 @@
     </div>
 
     <!-- Mobile menu -->
-    <div v-if="mobileOpen" class="md:hidden bg-[#050B1A]/95 backdrop-blur-md border-t border-cyber/10 px-6 py-4">
-      <div class="flex flex-col gap-4">
-        <a v-for="item in navItems" :key="item.href" :href="item.href"
-          @click="mobileOpen = false"
-          class="text-slate-400 hover:text-cyber transition-colors text-sm py-2 border-b border-white/5">
-          {{ item.label }}
-        </a>
+    <Transition name="mobile-menu">
+      <div v-if="mobileOpen" class="md:hidden bg-[#050B1A]/98 backdrop-blur-md border-t border-cyber/10 px-6 py-4">
+        <div class="flex flex-col">
+          <a v-for="item in navItems" :key="item.href" :href="item.href"
+            @click="mobileOpen = false"
+            class="flex items-center justify-between py-3 border-b border-white/5 transition-colors"
+            :class="activeSection === item.id ? 'text-cyber' : 'text-slate-400'">
+            <span class="text-sm font-body">{{ item.label }}</span>
+            <span v-if="activeSection === item.id" class="w-1.5 h-1.5 rounded-full bg-cyber animate-pulse"></span>
+          </a>
+          <a href="#contact" @click="mobileOpen = false"
+            class="mt-4 py-3 text-center border border-cyber/40 text-cyber text-sm font-esports rounded-sm">
+            合作洽谈
+          </a>
+        </div>
       </div>
-    </div>
+    </Transition>
   </nav>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import jiangyaoLogo from '../picture/jiangyao.png'
 
 const scrolled = ref(false)
 const mobileOpen = ref(false)
+const activeSection = ref('')
 
 const navItems = [
-  { label: '项目背景', href: '#background' },
-  { label: '公司介绍', href: '#company' },
-  { label: '核心团队', href: '#team' },
-  { label: '园区规划', href: '#park' },
-  { label: '核心业务', href: '#business' },
-  { label: '目标展望', href: '#goals' },
+  { label: '项目背景', href: '#background', id: 'background' },
+  { label: '公司介绍', href: '#company',    id: 'company' },
+  { label: '核心团队', href: '#team',       id: 'team' },
+  { label: '园区规划', href: '#park',       id: 'park' },
+  { label: '核心业务', href: '#business',   id: 'business' },
+  { label: '目标展望', href: '#goals',      id: 'goals' },
 ]
+
+let observer = null
 
 function handleScroll() {
   scrolled.value = window.scrollY > 50
 }
 
-onMounted(() => window.addEventListener('scroll', handleScroll))
-onUnmounted(() => window.removeEventListener('scroll', handleScroll))
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+
+  // IntersectionObserver for active section
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) activeSection.value = e.target.id
+      })
+    },
+    { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+  )
+
+  navItems.forEach(({ id }) => {
+    const el = document.getElementById(id)
+    if (el) observer.observe(el)
+  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  if (observer) observer.disconnect()
+})
 </script>
+
+<style scoped>
+.mobile-menu-enter-active, .mobile-menu-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.mobile-menu-enter-from, .mobile-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+</style>

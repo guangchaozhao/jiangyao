@@ -4,10 +4,14 @@
     <!-- ── 顶部分隔线 ── -->
     <div class="h-px bg-gradient-to-r from-transparent via-cyber/50 to-transparent"></div>
 
-    <!-- ── 背景装饰 ── -->
-    <div class="absolute inset-0 hex-bg opacity-40 pointer-events-none"></div>
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full
-                bg-electric/6 blur-[120px] pointer-events-none"></div>
+    <!-- ── 背景：大门入口图 ── -->
+    <div class="absolute top-0 inset-x-0 h-[600px] overflow-hidden pointer-events-none">
+      <img :src="gateBg" alt=""
+        class="w-full h-full object-cover object-center opacity-55"
+        style="mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0) 100%);
+               -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0) 100%)" />
+    </div>
+    <div class="absolute inset-0 hex-bg opacity-20 pointer-events-none"></div>
     <div class="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full
                 bg-purple-800/8 blur-[100px] pointer-events-none"></div>
 
@@ -26,12 +30,12 @@
 
       <!-- 大标题 clip-reveal -->
       <div class="mb-4 overflow-hidden reveal-clip">
-        <h2 class="font-esports font-black text-5xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight">
+        <h2 class="font-esports font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight">
           世界电竞
         </h2>
       </div>
       <div class="mb-14 overflow-hidden reveal-clip" style="transition-delay:0.12s">
-        <h2 class="font-esports font-black text-5xl md:text-7xl lg:text-8xl leading-none tracking-tight gradient-text">
+        <h2 class="font-esports font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl leading-none tracking-tight gradient-text">
           新地标
         </h2>
       </div>
@@ -39,14 +43,14 @@
       <!-- 四大核心数字 -->
       <div ref="statsRef" class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-cyber/10 mb-20 rounded-sm overflow-hidden">
         <div v-for="(s, i) in bigStats" :key="s.label"
-          class="relative bg-[#030912] px-8 py-10 group hover:bg-electric/5 transition-colors duration-300 cursor-default"
+          class="relative bg-[#030912] px-4 sm:px-8 py-7 sm:py-10 group hover:bg-electric/5 transition-colors duration-300 cursor-default"
           :class="i > 0 ? 'border-l border-cyber/10' : ''">
           <!-- top accent -->
           <div class="absolute top-0 left-0 right-0 h-px transition-all duration-500 group-hover:opacity-100 opacity-0"
             :style="{ background: `linear-gradient(90deg, transparent, ${s.color}, transparent)` }"></div>
 
           <div class="stat-number leading-none mb-1"
-            :style="{ fontSize: 'clamp(2.5rem,5vw,4rem)', color: s.color,
+            :style="{ fontSize: 'clamp(1.8rem,4vw,3.5rem)', color: s.color,
                       textShadow: `0 0 30px ${s.color}60` }">
             {{ s.prefix }}{{ s.counter.display.value }}{{ s.suffix }}
           </div>
@@ -221,6 +225,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useCountUp } from '../composables/useCountUp'
+import gateBg from '../picture/微信图片_20260420035331_448_4.png'
 
 const statsRef = ref(null)
 
