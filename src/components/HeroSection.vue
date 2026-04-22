@@ -1,14 +1,22 @@
 <template>
   <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-cosmic scanlines">
-    <!-- Star canvas -->
+    <!-- ① Aurora 极光层 -->
+    <div class="aurora-layer" aria-hidden="true">
+      <div class="aurora-blob aurora-blob-1"></div>
+      <div class="aurora-blob aurora-blob-2"></div>
+      <div class="aurora-blob aurora-blob-3"></div>
+      <div class="aurora-blob aurora-blob-4"></div>
+    </div>
+
+    <!-- ② 粒子网络 canvas（含星空 + 连线 + Tron格）-->
     <canvas ref="starCanvas" class="absolute inset-0 w-full h-full"></canvas>
 
     <!-- Hex grid overlay -->
-    <div class="absolute inset-0 hex-bg opacity-60"></div>
+    <div class="absolute inset-0 hex-bg opacity-30"></div>
 
-    <!-- Radial glow -->
+    <!-- 中心径向增亮 -->
     <div class="absolute inset-0 pointer-events-none"
-      style="background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(26,111,255,0.12) 0%, transparent 70%)">
+      style="background: radial-gradient(ellipse 70% 50% at 50% 55%, rgba(26,111,255,0.08) 0%, transparent 70%)">
     </div>
 
     <!-- Scan line sweep -->
@@ -114,8 +122,18 @@
         <div class="relative rounded-sm overflow-hidden border border-cyber/20
                     hover:border-cyber/50 hover:shadow-[0_0_40px_rgba(0,212,255,0.15)]
                     transition-all duration-300">
-          <video ref="heroThumb" :src="videoSrc" class="w-full aspect-video object-cover"
-            muted preload="metadata"></video>
+          <video
+            ref="heroThumb"
+            :src="videoSrc"
+            :poster="heroPoster"
+            class="w-full aspect-video object-cover"
+            muted
+            playsinline
+            webkit-playsinline="true"
+            x5-playsinline="true"
+            x5-video-player-type="h5"
+            preload="auto"
+          ></video>
           <div class="absolute inset-0 bg-[#030912]/55 group-hover:bg-[#030912]/35 transition-colors duration-300"></div>
           <!-- HUD corners -->
           <div class="absolute top-3 left-3 w-5 h-5 border-t border-l border-cyber/70"></div>
@@ -154,7 +172,18 @@
                 </svg>
               </button>
               <div class="border border-cyber/30 rounded-sm overflow-hidden shadow-[0_0_80px_rgba(0,212,255,0.2)]">
-                <video ref="modalVid" :src="videoSrc" class="w-full aspect-video" controls autoplay></video>
+                <video
+                  ref="modalVid"
+                  :src="videoSrc"
+                  :poster="heroPoster"
+                  class="w-full aspect-video"
+                  controls
+                  autoplay
+                  playsinline
+                  webkit-playsinline="true"
+                  x5-playsinline="true"
+                  x5-video-player-type="h5"
+                ></video>
               </div>
             </div>
           </div>
@@ -185,7 +214,9 @@
 
 <script setup>
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
-import videoSrc from '../picture/yuanqu.mp4'
+import { video } from '../config/oss'
+const videoSrc = video.yuanqu
+const heroPoster = `${videoSrc}?x-oss-process=video/snapshot,t_1000,f_jpg,w_1280,m_fast`
 
 const starCanvas = ref(null)
 const heroThumb = ref(null)
@@ -232,128 +263,183 @@ function typeText(text, displayRef, typingRef, onDone) {
   }, 80)
 }
 
-// Full canvas: stars + particles + Tron grid
+// Canvas: 星空 + Tron透视格 + 粒子连线网络 + 鼠标互动
 function initStars(canvas) {
   const ctx = canvas.getContext('2d')
+  let W = 0, H = 0
+
+  // 先声明空数组，resize 里安全访问
+  const netParticles = []
+
   const resize = () => {
-    canvas.width = canvas.offsetWidth
-    canvas.height = canvas.offsetHeight
+    const dpr = window.devicePixelRatio || 1
+    W = canvas.offsetWidth
+    H = canvas.offsetHeight
+    canvas.width  = W * dpr
+    canvas.height = H * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    netParticles.forEach(p => {
+      p.x = Math.random() * W
+      p.y = Math.random() * H
+    })
   }
   resize()
   window.addEventListener('resize', resize)
 
-  // Stars
-  const stars = Array.from({ length: 220 }, () => ({
+  // ── 静态星星 ──
+  const stars = Array.from({ length: 240 }, () => ({
     x: Math.random(),
     y: Math.random(),
-    r: Math.random() * 1.6 + 0.2,
+    r: Math.random() * 1.8 + 0.3,
     twinkle: Math.random() * Math.PI * 2,
-    speed: Math.random() * 0.4 + 0.05,
-    color: Math.random() > 0.8 ? '124,200,255' : '255,255,255',
+    spd: Math.random() * 0.35 + 0.05,
+    col: Math.random() > 0.8 ? '124,200,255' : '255,255,255',
+    bright: Math.random() > 0.92,
   }))
 
-  // Floating particles
-  const particles = Array.from({ length: 25 }, () => ({
-    x: Math.random(),
-    y: 1 + Math.random() * 0.3,
-    vy: -(Math.random() * 0.0004 + 0.0002),
-    vx: (Math.random() - 0.5) * 0.0002,
-    r: Math.random() * 1.8 + 0.5,
-    alpha: Math.random() * 0.5 + 0.2,
-  }))
-
-  // Tron grid config
+  // ── Tron透视格 ──
   let gridOffset = 0
-  const GRID_SPEED = 0.4          // px per frame (logical)
-  const COLS = 14
-  const GRID_COLOR = 'rgba(0,212,255,'
-  const HORIZON = 0.52            // vanishing point y ratio
+  const COLS = 14, HORIZON = 0.52
 
-  function drawGrid(W, H) {
-    const vx = W / 2
-    const vy = H * HORIZON
-    const bottom = H + 20
-
-    // How many rows: use offset to create scroll illusion
-    // Rows spread from horizon to bottom
-    const rowCount = 18
-    const totalDist = bottom - vy
-
+  function drawGrid() {
+    const vx = W / 2, vy = H * HORIZON, bottom = H + 20
+    const rowCount = 18, totalDist = bottom - vy
     ctx.save()
-
     for (let r = 0; r < rowCount; r++) {
-      // t: 0=horizon, 1=bottom; apply offset to animate
-      const raw = (r + gridOffset % 1) / rowCount
-      const t = Math.pow(raw, 1.8)      // non-linear: crowded near horizon
+      const t = Math.pow((r + gridOffset % 1) / rowCount, 1.8)
       const y = vy + t * totalDist
       if (y > bottom) continue
-
-      const alpha = t * 0.35
-      ctx.beginPath()
-      ctx.moveTo(0, y)
-      ctx.lineTo(W, y)
-      ctx.strokeStyle = GRID_COLOR + alpha + ')'
-      ctx.lineWidth = 0.5
-      ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y)
+      ctx.strokeStyle = `rgba(0,212,255,${t * 0.28})`
+      ctx.lineWidth = 0.5; ctx.stroke()
     }
-
-    // Vertical lines: evenly spaced at bottom, converge to vx at horizon
     for (let c = 0; c <= COLS; c++) {
-      const bx = (c / COLS) * W      // x at bottom
-      const alpha = 0.18
-      ctx.beginPath()
-      ctx.moveTo(vx, vy)             // all start from vanishing point
-      ctx.lineTo(bx, bottom)
-      ctx.strokeStyle = GRID_COLOR + alpha + ')'
-      ctx.lineWidth = 0.5
-      ctx.stroke()
+      const bx = (c / COLS) * W
+      ctx.beginPath(); ctx.moveTo(vx, vy); ctx.lineTo(bx, bottom)
+      ctx.strokeStyle = 'rgba(0,212,255,0.14)'
+      ctx.lineWidth = 0.5; ctx.stroke()
     }
-
     ctx.restore()
   }
 
+  // ── 粒子网络 ──
+  const PARTICLE_COUNT = 90
+  const CONNECT_DIST   = 140   // 连线距离
+  const MOUSE_REPEL    = 110   // 鼠标排斥距离
+  const REPEL_FORCE    = 3.5
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    netParticles.push({
+      x: Math.random() * (W || 1200),
+      y: Math.random() * (H || 800),
+      vx: (Math.random() - 0.5) * 1.2,
+      vy: (Math.random() - 0.5) * 1.2,
+      r: Math.random() * 1.8 + 0.8,
+      baseAlpha: Math.random() * 0.4 + 0.3,
+    })
+  }
+
+  // 鼠标位置（归一化到 canvas 坐标）
+  const mouse = { x: -9999, y: -9999 }
+  const onMouseMove = (e) => {
+    const rect = canvas.getBoundingClientRect()
+    mouse.x = e.clientX - rect.left
+    mouse.y = e.clientY - rect.top
+  }
+  window.addEventListener('mousemove', onMouseMove)
+
+  function updateParticles() {
+    netParticles.forEach(p => {
+      // 鼠标排斥
+      const dx = p.x - mouse.x, dy = p.y - mouse.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      if (dist < MOUSE_REPEL && dist > 0) {
+        const force = (MOUSE_REPEL - dist) / MOUSE_REPEL * REPEL_FORCE
+        p.vx += (dx / dist) * force * 0.08
+        p.vy += (dy / dist) * force * 0.08
+      }
+
+      // 速度阻尼
+      p.vx *= 0.98; p.vy *= 0.98
+
+      // 最大速度限制
+      const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
+      if (spd > 2.5) { p.vx = p.vx / spd * 2.5; p.vy = p.vy / spd * 2.5 }
+
+      p.x += p.vx; p.y += p.vy
+
+      // 边界弹回
+      if (p.x < 0)  { p.x = 0;  p.vx = Math.abs(p.vx) }
+      if (p.x > W)  { p.x = W;  p.vx = -Math.abs(p.vx) }
+      if (p.y < 0)  { p.y = 0;  p.vy = Math.abs(p.vy) }
+      if (p.y > H)  { p.y = H;  p.vy = -Math.abs(p.vy) }
+    })
+  }
+
+  function drawNetwork() {
+    // 连线
+    for (let i = 0; i < netParticles.length; i++) {
+      const a = netParticles[i]
+      for (let j = i + 1; j < netParticles.length; j++) {
+        const b = netParticles[j]
+        const dx = a.x - b.x, dy = a.y - b.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < CONNECT_DIST) {
+          const alpha = (1 - dist / CONNECT_DIST) * 0.45
+          ctx.beginPath()
+          ctx.moveTo(a.x, a.y)
+          ctx.lineTo(b.x, b.y)
+          ctx.strokeStyle = `rgba(0,212,255,${alpha})`
+          ctx.lineWidth = 0.7
+          ctx.stroke()
+        }
+      }
+    }
+
+    // 粒子点
+    netParticles.forEach(p => {
+      // 发光晕
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5)
+      g.addColorStop(0, `rgba(0,212,255,${p.baseAlpha * 0.6})`)
+      g.addColorStop(1, 'rgba(0,212,255,0)')
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2)
+      ctx.fillStyle = g; ctx.fill()
+      // 实心点
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(0,212,255,${p.baseAlpha})`
+      ctx.fill()
+    })
+  }
+
   function draw() {
-    const W = canvas.width, H = canvas.height
     ctx.clearRect(0, 0, W, H)
 
-    // Draw Tron grid first (background layer)
-    gridOffset += GRID_SPEED / 60   // ~60fps target
+    // 1. Tron格
+    gridOffset += 0.4 / 60
+    drawGrid()
 
-    drawGrid(W, H)
-
-    // Stars
-    stars.forEach((s) => {
-      s.twinkle += s.speed * 0.03
-      const a = 0.2 + 0.8 * Math.abs(Math.sin(s.twinkle))
+    // 2. 静态星星
+    stars.forEach(s => {
+      s.twinkle += s.spd * 0.03
+      const base = s.bright ? 0.5 : 0.1
+      const a    = base + 0.7 * Math.abs(Math.sin(s.twinkle))
       ctx.beginPath()
       ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(${s.color},${a * 0.65})`
+      ctx.fillStyle = `rgba(${s.col},${Math.min(1, a * 0.9)})`
       ctx.fill()
     })
 
-    // Particles
-    particles.forEach((p) => {
-      p.x += p.vx; p.y += p.vy
-      if (p.y < -0.05) { p.y = 1.05; p.x = Math.random() }
-      const px = p.x * W, py = p.y * H
-      // Glow
-      const grad = ctx.createRadialGradient(px, py, 0, px, py, p.r * 3)
-      grad.addColorStop(0, `rgba(0,212,255,${p.alpha * 0.8})`)
-      grad.addColorStop(1, 'rgba(0,212,255,0)')
-      ctx.beginPath()
-      ctx.arc(px, py, p.r * 3, 0, Math.PI * 2)
-      ctx.fillStyle = grad
-      ctx.fill()
-      // Core dot
-      ctx.beginPath()
-      ctx.arc(px, py, p.r, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(0,212,255,${p.alpha})`
-      ctx.fill()
-    })
+    // 3. 粒子网络
+    updateParticles()
+    drawNetwork()
 
     animFrame = requestAnimationFrame(draw)
   }
+
   draw()
+
+  // 清理
+  canvas._cleanup = () => window.removeEventListener('mousemove', onMouseMove)
 }
 
 onMounted(() => {
@@ -367,14 +453,96 @@ onMounted(() => {
 })
 onUnmounted(() => {
   if (animFrame) cancelAnimationFrame(animFrame)
+  if (starCanvas.value?._cleanup) starCanvas.value._cleanup()
 })
 </script>
 
 <style scoped>
 @keyframes spin {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
 .vmodal-enter-active, .vmodal-leave-active { transition: opacity 0.25s ease; }
 .vmodal-enter-from, .vmodal-leave-to { opacity: 0; }
+
+/* ══ Aurora 极光层 ══ */
+.aurora-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0;
+  animation: aurora-fade-in 1.5s ease forwards;
+}
+
+@keyframes aurora-fade-in {
+  to { opacity: 1; }
+}
+
+/* 蓝紫极光 — 左上 */
+.aurora-blob-1 {
+  width: 55vw; height: 55vw;
+  max-width: 700px; max-height: 700px;
+  top: -15%; left: -10%;
+  background: radial-gradient(ellipse, rgba(26,111,255,0.22) 0%, transparent 70%);
+  animation: aurora-fade-in 1.5s ease forwards, aurora-drift-1 14s ease-in-out infinite;
+  animation-delay: 0s, 1.5s;
+}
+
+/* 青色极光 — 右侧 */
+.aurora-blob-2 {
+  width: 50vw; height: 50vw;
+  max-width: 650px; max-height: 650px;
+  top: 10%; right: -15%;
+  background: radial-gradient(ellipse, rgba(0,212,255,0.18) 0%, transparent 70%);
+  animation: aurora-fade-in 1.5s ease forwards, aurora-drift-2 17s ease-in-out infinite;
+  animation-delay: 0.4s, 1.5s;
+}
+
+/* 紫色极光 — 中下 */
+.aurora-blob-3 {
+  width: 60vw; height: 40vw;
+  max-width: 800px; max-height: 500px;
+  bottom: 5%; left: 15%;
+  background: radial-gradient(ellipse, rgba(124,58,237,0.16) 0%, transparent 70%);
+  animation: aurora-fade-in 1.5s ease forwards, aurora-drift-3 20s ease-in-out infinite;
+  animation-delay: 0.8s, 1.5s;
+}
+
+/* 深青极光 — 中心补光 */
+.aurora-blob-4 {
+  width: 40vw; height: 40vw;
+  max-width: 500px; max-height: 500px;
+  top: 30%; left: 30%;
+  background: radial-gradient(ellipse, rgba(0,180,255,0.10) 0%, transparent 70%);
+  animation: aurora-fade-in 1.5s ease forwards, aurora-drift-4 11s ease-in-out infinite;
+  animation-delay: 1.2s, 1.5s;
+}
+
+@keyframes aurora-drift-1 {
+  0%,100% { transform: translate(0,   0)   scale(1); }
+  33%      { transform: translate(5%,  8%)  scale(1.08); }
+  66%      { transform: translate(-4%, 5%)  scale(0.95); }
+}
+@keyframes aurora-drift-2 {
+  0%,100% { transform: translate(0,   0)   scale(1); }
+  40%      { transform: translate(-6%, 6%)  scale(1.1); }
+  70%      { transform: translate(4%, -5%)  scale(0.92); }
+}
+@keyframes aurora-drift-3 {
+  0%,100% { transform: translate(0,   0)   scale(1); }
+  30%      { transform: translate(4%, -6%)  scale(1.06); }
+  60%      { transform: translate(-5%, 4%)  scale(1.12); }
+}
+@keyframes aurora-drift-4 {
+  0%,100% { transform: translate(0,   0)   scale(1); }
+  50%      { transform: translate(-3%, -4%) scale(1.15); }
+}
 </style>

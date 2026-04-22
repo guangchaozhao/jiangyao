@@ -17,12 +17,20 @@
           class="glass-card neon-hover rounded-sm relative hud-corner group hover:-translate-y-2 transition-all duration-300 slide-up overflow-hidden"
           :class="`delay-${(i+1)*100}`">
 
-          <!-- Photo -->
-          <div class="relative h-64 overflow-hidden">
+          <!-- Photo
+               xl(4列): h-64 object-cover 人像不动
+               md(2列): h-52 object-contain 自动缩小展示完整人像
+               sm以下(1列): h-44 object-contain
+          -->
+          <div class="relative overflow-hidden
+                      h-44 sm:h-52 md:h-52 xl:h-64
+                      bg-[#0A1628]">
             <img
               :src="member.photo"
               :alt="member.name"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-full transition-transform duration-500
+                     object-contain object-top
+                     xl:object-cover xl:group-hover:scale-105"
               :style="{ objectPosition: member.pos || 'center top' }"
               loading="lazy"
             />
@@ -64,10 +72,11 @@
 </template>
 
 <script setup>
-import tianyuan from '../picture/tianyuan.png'
-import xiaogang from '../picture/xiaogang.png'
-import zhanghui from '../picture/zhanghui.png'
-import zhengxi from '../picture/zhengxi.png'
+import { img } from '../config/oss'
+const tianyuan = img.tianyuan
+const xiaogang = img.xiaogang
+const zhanghui = img.zhanghui
+const zhengxi  = img.chengxi
 
 const team = [
   {

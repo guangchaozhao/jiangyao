@@ -225,7 +225,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useCountUp } from '../composables/useCountUp'
-import gateBg from '../picture/微信图片_20260420035331_448_4.png'
+import { img } from '../config/oss'
+const gateBg = img.park5
 
 const statsRef = ref(null)
 

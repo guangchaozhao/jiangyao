@@ -81,7 +81,8 @@
 
 <script setup>
 import { h } from 'vue'
-import jiangyaoLogo from '../picture/jiangyao.png'
+import { img } from '../config/oss'
+const jiangyaoLogo = img.jiangyao
 
 const quickLinks = [
   { label: '项目背景', href: '#background' },

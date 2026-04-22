@@ -84,7 +84,8 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import parkBg from '../picture/微信图片_20260420035333_450_4.jpg'
+import { img } from '../config/oss'
+const parkBg = img.park1
 
 const parallaxImg = ref(null)
 let ticking = false

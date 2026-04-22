@@ -112,14 +112,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import xingchenLogo from '../picture/xingchen.png'
-
-import img1 from '../picture/微信图片_20260420035333_450_4.jpg'
-import img2 from '../picture/微信图片_20260420035327_446_4.jpg'
-import img3 from '../picture/微信图片_20260420035333_451_4.png'
-import img4 from '../picture/微信图片_20260420035330_447_4.png'
-import img5 from '../picture/微信图片_20260420035331_448_4.png'
-import img6 from '../picture/微信图片_20260420035332_449_4.png'
+import { img } from '../config/oss'
+const xingchenLogo = img.xingchen
+const img1 = img.park1, img2 = img.park2, img3 = img.park3
+const img4 = img.park4, img5 = img.park5, img6 = img.park6
 
 const slides = [
   { img: img1, label: '园区全景', desc: '立足中山港口镇，电竞教育中心、SC俱乐部、直播基地、赛事中心全貌一览' },

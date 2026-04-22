@@ -62,7 +62,8 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import jiangyaoLogo from '../picture/jiangyao.png'
+import { img } from '../config/oss'
+const jiangyaoLogo = img.jiangyao
 
 const scrolled = ref(false)
 const mobileOpen = ref(false)

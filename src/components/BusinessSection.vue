@@ -1,5 +1,10 @@
 <script setup>
-import xingchenLogo from '../picture/xingchen.png'
+import { ref } from 'vue'
+import { img } from '../config/oss'
+const xingchenLogo = img.xingchen
+import VideoGalleryModal from './VideoGalleryModal.vue'
+
+const showGallery = ref(false)
 </script>
 
 <template>
@@ -39,15 +44,32 @@ import xingchenLogo from '../picture/xingchen.png'
         </div>
 
         <!-- 2. Doud AI 小卡 (1/3宽) -->
-        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-100">
+        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-100 flex flex-col">
           <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-electric/10 rounded-full blur-2xl"></div>
           <div class="w-10 h-10 rounded-sm bg-electric/15 border border-electric/30 flex items-center justify-center text-xl mb-4">🤖</div>
           <h3 class="font-esports font-bold text-white text-lg mb-2">Doud AI</h3>
           <p class="text-cyber text-xs font-body mb-3">超级视频工厂</p>
-          <p class="text-slate-400 text-xs font-body leading-relaxed">
+          <p class="text-slate-400 text-xs font-body leading-relaxed flex-1">
             中国AI技术开拓者，资深专家团队，助力政企单位节能增效，提供AI时代技术服务与人才培养。
           </p>
+          <!-- 案例库按钮 -->
+          <button @click="showGallery = true"
+            class="cyber-btn mt-5 w-full py-2.5 border border-electric/50 text-electric
+                   font-esports font-bold text-xs rounded-sm
+                   hover:bg-electric/10 hover:border-electric hover:shadow-[0_0_16px_rgba(26,111,255,0.3)]
+                   transition-all duration-300 cursor-pointer flex items-center justify-center gap-2">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            查看案例库
+          </button>
         </div>
+
+        <!-- 案例库弹窗 -->
+        <VideoGalleryModal :show="showGallery" @close="showGallery = false" />
 
         <!-- 3. 教育学院 窄高卡 -->
         <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-200">
