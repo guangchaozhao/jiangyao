@@ -16,6 +16,9 @@ dist-ssr
 src/picture/*.mp4
 src/picture/*.zip
 src/picture.zip
+src/showcase-videos/*
+src/avatar-previews/*
+src/esports/*
 
 # Editor directories and files
 .vscode/*

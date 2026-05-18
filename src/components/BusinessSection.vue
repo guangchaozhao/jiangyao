@@ -3,8 +3,10 @@ import { ref } from 'vue'
 import { img } from '../config/oss'
 const xingchenLogo = img.xingchen
 import VideoGalleryModal from './VideoGalleryModal.vue'
+import EsportsGalleryModal from './EsportsGalleryModal.vue'
 
-const showGallery = ref(false)
+const showGallery        = ref(false)
+const showEsportsGallery = ref(false)
 </script>
 
 <template>
@@ -36,10 +38,21 @@ const showGallery = ref(false)
               三十年冠军经验团队领衔，以中国电竞开拓者马天元（MTY）为核心，联合星竞威武集团顶级资源，
               组建热门项目职业战队，构建完善青训体系，自主策划品牌赛事，打造世界顶级竞技IP。
             </p>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2 mb-5">
               <span v-for="t in ['职业战队', '青训体系', '品牌赛事', '30年冠军经验', 'IP运营']" :key="t"
                 class="text-xs px-3 py-1 rounded-sm bg-cyber/8 border border-cyber/20 text-star font-body">{{ t }}</span>
             </div>
+            <button type="button" @click="showEsportsGallery = true"
+              class="cyber-btn px-6 py-2.5 border border-cyber/50 text-cyber
+                     font-esports font-bold text-xs rounded-sm
+                     hover:bg-cyber/10 hover:border-cyber hover:shadow-[0_0_16px_rgba(0,212,255,0.3)]
+                     transition-all duration-300 cursor-pointer inline-flex items-center justify-center gap-2">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              查看战队影像库
+            </button>
           </div>
         </div>
 
@@ -70,6 +83,8 @@ const showGallery = ref(false)
 
         <!-- 案例库弹窗 -->
         <VideoGalleryModal :show="showGallery" @close="showGallery = false" />
+        <!-- 电竞俱乐部战队影像库弹窗 -->
+        <EsportsGalleryModal :show="showEsportsGallery" @close="showEsportsGallery = false" />
 
         <!-- 3. 教育学院 窄高卡 -->
         <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-200">

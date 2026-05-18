@@ -1,5 +1,25 @@
-# Vue 3 + Vite
+# Jiangyao 官网
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Vite + Vue 3 + Tailwind CSS。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## OSS 资源同步
+
+电竞影像本地维护目录：
+
+```text
+D:\AAACODE\Codetest\Doudtest\avatar\jiangyao-site-2026\esports
+```
+
+同步命令：
+
+```bash
+npm run sync:oss
+```
+
+脚本会上传该目录下的图片/视频到 `oss://jiangyao-site-2026/esports/`，同时上传 `oss://jiangyao-site-2026/esports/manifest.json`。官网战队影像库运行时读取这个 manifest，新媒体同步后不需要为了列表重新打包前端。
+
+只生成配置、不上传时使用：
+
+```bash
+npm run sync:oss -- --no-upload
+```
