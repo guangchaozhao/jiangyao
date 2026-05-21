@@ -69,7 +69,15 @@
       <!-- Bottom bar -->
       <div class="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="text-slate-600 text-xs font-body text-center sm:text-left">
-          © 2025 江曜擎天电竞发展（广东）有限公司 · 粤ICP备XXXXXXXX号
+          © 2026 江曜擎天电竞发展（广东）有限公司 ·
+          <a
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-cyber transition-colors"
+          >
+            粤ICP备2026051924号-1
+          </a>
         </div>
         <div class="font-esports text-xs text-cyber/50 tracking-widest">
           江曜所至，皆为星辰
@@ -85,12 +93,11 @@ import { img } from '../config/oss'
 const jiangyaoLogo = img.jiangyao
 
 const quickLinks = [
-  { label: '项目背景', href: '#background' },
-  { label: '公司介绍', href: '#company' },
-  { label: '核心团队', href: '#team' },
+  { label: '集团概况', href: '#company' },
   { label: '园区规划', href: '#park' },
   { label: '核心业务', href: '#business' },
-  { label: '目标展望', href: '#goals' },
+  { label: '子公司', href: '#subsidiaries' },
+  { label: '新闻中心', href: '#news' },
   { label: '合作洽谈', href: '#contact' },
 ]
 

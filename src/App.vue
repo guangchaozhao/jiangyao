@@ -11,11 +11,12 @@
       <BlueprintSection />
       <BackgroundSection />
       <CompanySection />
-      <TeamSection />
+      <SubsidiariesSection />
       <ParkSection />
       <ParkGallery />
       <BusinessSection />
       <GoalsSection />
+      <GroupNewsSection />
       <!-- <PartnersSection /> -->
       <ContactSection />
       <FooterSection />
@@ -32,11 +33,12 @@ import HeroSection from './components/HeroSection.vue'
 import BlueprintSection from './components/BlueprintSection.vue'
 import BackgroundSection from './components/BackgroundSection.vue'
 import CompanySection from './components/CompanySection.vue'
-import TeamSection from './components/TeamSection.vue'
+import SubsidiariesSection from './components/SubsidiariesSection.vue'
 import ParkSection from './components/ParkSection.vue'
 import ParkGallery from './components/ParkGallery.vue'
 import BusinessSection from './components/BusinessSection.vue'
 import GoalsSection from './components/GoalsSection.vue'
+import GroupNewsSection from './components/GroupNewsSection.vue'
 import PartnersSection from './components/PartnersSection.vue'
 import ContactSection from './components/ContactSection.vue'
 import FooterSection from './components/FooterSection.vue'

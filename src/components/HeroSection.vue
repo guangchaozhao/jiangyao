@@ -59,20 +59,20 @@
       <div class="slide-up flex justify-center mb-8">
         <span class="section-tag font-esports text-[11px]">
           <span class="inline-block w-1.5 h-1.5 bg-cyber rounded-full mr-2 animate-pulse"></span>
-          江曜擎天电竞发展（广东）有限公司
+          集团
         </span>
       </div>
 
       <!-- Glitch title -->
-      <div class="slide-up delay-100 mb-3">
+      <div class="slide-up delay-100 mb-6">
         <h1
-          class="font-esports font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl gradient-text-white glitch neon-text-blue"
-          data-text="星辰电子竞技">
-          星辰电子竞技
+          class="mx-auto max-w-6xl font-esports font-black text-4xl leading-[1.08] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl gradient-text-white glitch neon-text-blue"
+          data-text="江曜擎天电竞发展">
+          江曜擎天电竞发展
         </h1>
-      </div>
-      <div class="slide-up delay-200 mb-6">
-        <span class="font-display font-bold text-2xl sm:text-3xl md:text-5xl gradient-text">综合产业园区</span>
+        <div class="mt-3 font-esports font-black text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl gradient-text-white neon-text-blue">
+          （广东）有限公司
+        </div>
       </div>
 
       <!-- Divider with dots -->
@@ -101,11 +101,11 @@
 
       <!-- CTA -->
       <div class="slide-up delay-400 flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-        <a href="#background"
+        <a href="#company"
           class="cyber-btn group relative px-10 py-3.5 bg-gradient-to-r from-electric to-cyber text-white
                  font-esports font-bold text-sm rounded-sm
                  hover:shadow-[0_0_40px_rgba(0,212,255,0.5)] transition-all duration-300 cursor-pointer overflow-hidden">
-          探索园区
+          了解集团
           <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>
         </a>
         <a href="#contact"
