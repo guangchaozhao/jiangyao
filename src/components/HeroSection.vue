@@ -264,15 +264,40 @@ function typeText(text, displayRef, typingRef, onDone) {
 }
 
 // Canvas: 星空 + Tron透视格 + 粒子连线网络 + 鼠标互动
+// 优化:空间哈希连线 / 离屏粒子精灵 / 视口可见 + 标签页可见 才渲染 / 移动端降级
 function initStars(canvas) {
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContext('2d', { alpha: true })
   let W = 0, H = 0
 
-  // 先声明空数组，resize 里安全访问
+  // 设备降级
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  const lowCpu = (navigator.hardwareConcurrency || 4) <= 4
+  const lowEnd = isMobile || lowCpu
+
+  // 粒子精灵预渲染(关键优化:避免每帧 createRadialGradient)
+  const SPRITE_BASE_R = 2.5
+  const SPRITE_PAD = SPRITE_BASE_R * 5
+  const spriteCanvas = document.createElement('canvas')
+  spriteCanvas.width = SPRITE_PAD * 2
+  spriteCanvas.height = SPRITE_PAD * 2
+  {
+    const sctx = spriteCanvas.getContext('2d')
+    const cx = SPRITE_PAD, cy = SPRITE_PAD
+    const g = sctx.createRadialGradient(cx, cy, 0, cx, cy, SPRITE_PAD)
+    g.addColorStop(0,    'rgba(0,212,255,0.55)')
+    g.addColorStop(0.25, 'rgba(0,212,255,0.25)')
+    g.addColorStop(1,    'rgba(0,212,255,0)')
+    sctx.fillStyle = g
+    sctx.fillRect(0, 0, SPRITE_PAD * 2, SPRITE_PAD * 2)
+    // 实心核
+    sctx.beginPath(); sctx.arc(cx, cy, SPRITE_BASE_R * 0.55, 0, Math.PI * 2)
+    sctx.fillStyle = 'rgba(140,230,255,0.95)'; sctx.fill()
+  }
+
   const netParticles = []
 
   const resize = () => {
-    const dpr = window.devicePixelRatio || 1
+    const dpr = Math.min(window.devicePixelRatio || 1, lowEnd ? 1.25 : 1.75)
     W = canvas.offsetWidth
     H = canvas.offsetHeight
     canvas.width  = W * dpr
@@ -287,7 +312,8 @@ function initStars(canvas) {
   window.addEventListener('resize', resize)
 
   // ── 静态星星 ──
-  const stars = Array.from({ length: 240 }, () => ({
+  const STAR_COUNT = lowEnd ? 90 : 240
+  const stars = Array.from({ length: STAR_COUNT }, () => ({
     x: Math.random(),
     y: Math.random(),
     r: Math.random() * 1.8 + 0.3,
@@ -299,33 +325,37 @@ function initStars(canvas) {
 
   // ── Tron透视格 ──
   let gridOffset = 0
-  const COLS = 14, HORIZON = 0.52
+  const COLS = lowEnd ? 10 : 14, HORIZON = 0.52
+  const ROW_COUNT = lowEnd ? 12 : 18
 
   function drawGrid() {
     const vx = W / 2, vy = H * HORIZON, bottom = H + 20
-    const rowCount = 18, totalDist = bottom - vy
+    const totalDist = bottom - vy
     ctx.save()
-    for (let r = 0; r < rowCount; r++) {
-      const t = Math.pow((r + gridOffset % 1) / rowCount, 1.8)
+    ctx.lineWidth = 0.5
+    for (let r = 0; r < ROW_COUNT; r++) {
+      const t = Math.pow((r + gridOffset % 1) / ROW_COUNT, 1.8)
       const y = vy + t * totalDist
       if (y > bottom) continue
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y)
       ctx.strokeStyle = `rgba(0,212,255,${t * 0.28})`
-      ctx.lineWidth = 0.5; ctx.stroke()
+      ctx.stroke()
     }
+    ctx.strokeStyle = 'rgba(0,212,255,0.14)'
     for (let c = 0; c <= COLS; c++) {
       const bx = (c / COLS) * W
       ctx.beginPath(); ctx.moveTo(vx, vy); ctx.lineTo(bx, bottom)
-      ctx.strokeStyle = 'rgba(0,212,255,0.14)'
-      ctx.lineWidth = 0.5; ctx.stroke()
+      ctx.stroke()
     }
     ctx.restore()
   }
 
   // ── 粒子网络 ──
-  const PARTICLE_COUNT = 90
-  const CONNECT_DIST   = 140   // 连线距离
-  const MOUSE_REPEL    = 110   // 鼠标排斥距离
+  const PARTICLE_COUNT = lowEnd ? 32 : 90
+  const CONNECT_DIST   = lowEnd ? 100 : 140
+  const CONNECT_DIST_SQ = CONNECT_DIST * CONNECT_DIST
+  const MOUSE_REPEL    = 110
+  const MOUSE_REPEL_SQ = MOUSE_REPEL * MOUSE_REPEL
   const REPEL_FORCE    = 3.5
 
   for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -339,87 +369,111 @@ function initStars(canvas) {
     })
   }
 
-  // 鼠标位置（归一化到 canvas 坐标）
+  // 鼠标位置(canvas 坐标)
   const mouse = { x: -9999, y: -9999 }
   const onMouseMove = (e) => {
     const rect = canvas.getBoundingClientRect()
     mouse.x = e.clientX - rect.left
     mouse.y = e.clientY - rect.top
   }
-  window.addEventListener('mousemove', onMouseMove)
+  if (!isMobile) window.addEventListener('mousemove', onMouseMove)
 
   function updateParticles() {
-    netParticles.forEach(p => {
-      // 鼠标排斥
+    for (let i = 0; i < netParticles.length; i++) {
+      const p = netParticles[i]
+      // 鼠标排斥(平方距离比较,省 sqrt)
       const dx = p.x - mouse.x, dy = p.y - mouse.y
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist < MOUSE_REPEL && dist > 0) {
+      const dSq = dx * dx + dy * dy
+      if (dSq < MOUSE_REPEL_SQ && dSq > 0.01) {
+        const dist = Math.sqrt(dSq)
         const force = (MOUSE_REPEL - dist) / MOUSE_REPEL * REPEL_FORCE
         p.vx += (dx / dist) * force * 0.08
         p.vy += (dy / dist) * force * 0.08
       }
 
-      // 速度阻尼
       p.vx *= 0.98; p.vy *= 0.98
 
-      // 最大速度限制
-      const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
-      if (spd > 2.5) { p.vx = p.vx / spd * 2.5; p.vy = p.vy / spd * 2.5 }
+      const spdSq = p.vx * p.vx + p.vy * p.vy
+      if (spdSq > 6.25) { // 2.5^2
+        const spd = Math.sqrt(spdSq)
+        p.vx = p.vx / spd * 2.5; p.vy = p.vy / spd * 2.5
+      }
 
       p.x += p.vx; p.y += p.vy
 
-      // 边界弹回
       if (p.x < 0)  { p.x = 0;  p.vx = Math.abs(p.vx) }
       if (p.x > W)  { p.x = W;  p.vx = -Math.abs(p.vx) }
       if (p.y < 0)  { p.y = 0;  p.vy = Math.abs(p.vy) }
       if (p.y > H)  { p.y = H;  p.vy = -Math.abs(p.vy) }
-    })
+    }
   }
 
+  // 空间哈希:每帧 rebuild,只比相邻格,O(n²) → O(n)
+  const CELL = CONNECT_DIST
+  const grid = new Map()
+  function key(cx, cy) { return cx * 10000 + cy }
+
   function drawNetwork() {
+    grid.clear()
+    for (let i = 0; i < netParticles.length; i++) {
+      const p = netParticles[i]
+      const cx = (p.x / CELL) | 0
+      const cy = (p.y / CELL) | 0
+      const k = key(cx, cy)
+      let bucket = grid.get(k)
+      if (!bucket) { bucket = []; grid.set(k, bucket) }
+      bucket.push(i)
+      p._cx = cx; p._cy = cy
+    }
+
     // 连线
+    ctx.lineWidth = 0.7
     for (let i = 0; i < netParticles.length; i++) {
       const a = netParticles[i]
-      for (let j = i + 1; j < netParticles.length; j++) {
-        const b = netParticles[j]
-        const dx = a.x - b.x, dy = a.y - b.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        if (dist < CONNECT_DIST) {
-          const alpha = (1 - dist / CONNECT_DIST) * 0.45
-          ctx.beginPath()
-          ctx.moveTo(a.x, a.y)
-          ctx.lineTo(b.x, b.y)
-          ctx.strokeStyle = `rgba(0,212,255,${alpha})`
-          ctx.lineWidth = 0.7
-          ctx.stroke()
+      // 只查 9 个相邻格
+      for (let oy = -1; oy <= 1; oy++) {
+        for (let ox = -1; ox <= 1; ox++) {
+          const bucket = grid.get(key(a._cx + ox, a._cy + oy))
+          if (!bucket) continue
+          for (let bi = 0; bi < bucket.length; bi++) {
+            const j = bucket[bi]
+            if (j <= i) continue // 去重 + 跳过自己
+            const b = netParticles[j]
+            const dx = a.x - b.x, dy = a.y - b.y
+            const dSq = dx * dx + dy * dy
+            if (dSq < CONNECT_DIST_SQ) {
+              const dist = Math.sqrt(dSq)
+              const alpha = (1 - dist / CONNECT_DIST) * 0.45
+              ctx.beginPath()
+              ctx.moveTo(a.x, a.y)
+              ctx.lineTo(b.x, b.y)
+              ctx.strokeStyle = `rgba(0,212,255,${alpha})`
+              ctx.stroke()
+            }
+          }
         }
       }
     }
 
-    // 粒子点
-    netParticles.forEach(p => {
-      // 发光晕
-      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5)
-      g.addColorStop(0, `rgba(0,212,255,${p.baseAlpha * 0.6})`)
-      g.addColorStop(1, 'rgba(0,212,255,0)')
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2)
-      ctx.fillStyle = g; ctx.fill()
-      // 实心点
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(0,212,255,${p.baseAlpha})`
-      ctx.fill()
-    })
+    // 粒子点(用预渲染精灵 drawImage)
+    for (let i = 0; i < netParticles.length; i++) {
+      const p = netParticles[i]
+      const scale = (p.r / SPRITE_BASE_R) * (0.7 + p.baseAlpha)
+      const size = SPRITE_PAD * 2 * scale
+      ctx.globalAlpha = p.baseAlpha + 0.3
+      ctx.drawImage(spriteCanvas, p.x - size / 2, p.y - size / 2, size, size)
+    }
+    ctx.globalAlpha = 1
   }
 
-  function draw() {
+  function drawFrame() {
     ctx.clearRect(0, 0, W, H)
 
-    // 1. Tron格
     gridOffset += 0.4 / 60
     drawGrid()
 
-    // 2. 静态星星
-    stars.forEach(s => {
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i]
       s.twinkle += s.spd * 0.03
       const base = s.bright ? 0.5 : 0.1
       const a    = base + 0.7 * Math.abs(Math.sin(s.twinkle))
@@ -427,19 +481,45 @@ function initStars(canvas) {
       ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2)
       ctx.fillStyle = `rgba(${s.col},${Math.min(1, a * 0.9)})`
       ctx.fill()
-    })
+    }
 
-    // 3. 粒子网络
     updateParticles()
     drawNetwork()
-
-    animFrame = requestAnimationFrame(draw)
   }
 
-  draw()
+  // ── 渲染门控:仅在视口内 + 标签页可见时渲染 ──
+  let inView = true
+  let pageVisible = !document.hidden
+  let running = false
 
-  // 清理
-  canvas._cleanup = () => window.removeEventListener('mousemove', onMouseMove)
+  const io = new IntersectionObserver(([entry]) => {
+    inView = entry.isIntersecting
+    schedule()
+  }, { threshold: 0.01 })
+  io.observe(canvas)
+
+  const onVis = () => { pageVisible = !document.hidden; schedule() }
+  document.addEventListener('visibilitychange', onVis)
+
+  function loop() {
+    if (!inView || !pageVisible) { running = false; return }
+    drawFrame()
+    animFrame = requestAnimationFrame(loop)
+  }
+  function schedule() {
+    if (inView && pageVisible && !running) {
+      running = true
+      animFrame = requestAnimationFrame(loop)
+    }
+  }
+  schedule()
+
+  canvas._cleanup = () => {
+    if (!isMobile) window.removeEventListener('mousemove', onMouseMove)
+    window.removeEventListener('resize', resize)
+    document.removeEventListener('visibilitychange', onVis)
+    io.disconnect()
+  }
 }
 
 onMounted(() => {

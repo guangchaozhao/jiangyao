@@ -2,7 +2,7 @@
   <div class="relative">
     <BackToTop />
     <!-- Scroll progress bar -->
-    <div class="scroll-progress" :style="{ width: scrollPct + '%' }"></div>
+    <div class="scroll-progress" :style="{ transform: `scaleX(${scrollRatio})` }"></div>
 
     <IntroLoader v-if="!introComplete" @done="onIntroDone" />
     <template v-if="introComplete">
@@ -23,6 +23,7 @@
 
 <script setup>
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import Lenis from 'lenis'
 import IntroLoader from './components/IntroLoader.vue'
 import BackToTop from './components/BackToTop.vue'
 import NavBar from './components/NavBar.vue'
@@ -39,18 +40,72 @@ import FooterSection from './components/FooterSection.vue'
 import { initScrollReveal } from './composables/useScrollReveal'
 
 const introComplete = ref(false)
-const scrollPct = ref(0)
+const scrollRatio = ref(0)
+
+let lenis = null
+let rafId = null
+const prefersReducedMotion = typeof window !== 'undefined'
+  && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 function onIntroDone() {
   introComplete.value = true
   nextTick(() => initScrollReveal())
 }
 
-function updateScroll() {
-  const el = document.documentElement
-  scrollPct.value = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100
+function setupLenis() {
+  if (prefersReducedMotion) {
+    // Fallback: native scroll + native progress
+    const onScroll = () => {
+      const el = document.documentElement
+      const max = el.scrollHeight - el.clientHeight
+      scrollRatio.value = max > 0 ? el.scrollTop / max : 0
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }
+
+  lenis = new Lenis({
+    lerp: 0.12,
+    wheelMultiplier: 1,
+    smoothWheel: true,
+    syncTouch: false,
+  })
+
+  lenis.on('scroll', ({ scroll, limit }) => {
+    scrollRatio.value = limit > 0 ? scroll / limit : 0
+  })
+
+  const raf = (time) => {
+    lenis.raf(time)
+    rafId = requestAnimationFrame(raf)
+  }
+  rafId = requestAnimationFrame(raf)
+
+  // Make anchor links work with Lenis
+  const onAnchorClick = (e) => {
+    const a = e.target.closest('a[href^="#"]')
+    if (!a) return
+    const id = a.getAttribute('href')
+    if (id && id.length > 1) {
+      const target = document.querySelector(id)
+      if (target) {
+        e.preventDefault()
+        lenis.scrollTo(target, { offset: -20 })
+      }
+    }
+  }
+  document.addEventListener('click', onAnchorClick)
+
+  return () => {
+    document.removeEventListener('click', onAnchorClick)
+    if (rafId) cancelAnimationFrame(rafId)
+    lenis?.destroy()
+    lenis = null
+  }
 }
 
-onMounted(() => window.addEventListener('scroll', updateScroll, { passive: true }))
-onUnmounted(() => window.removeEventListener('scroll', updateScroll))
+let cleanupScroll = null
+onMounted(() => { cleanupScroll = setupLenis() })
+onUnmounted(() => { cleanupScroll?.() })
 </script>
