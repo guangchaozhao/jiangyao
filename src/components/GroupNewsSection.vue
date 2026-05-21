@@ -19,7 +19,7 @@
         <div
           v-for="(item, index) in newsCategories"
           :key="item.title"
-          class="glass-card neon-hover rounded-sm p-6 slide-up"
+          class="glass-card neon-hover rounded-2xl p-6 slide-up"
           :class="`delay-${(index + 1) * 100}`"
         >
           <div class="mb-5 flex items-center justify-between">
@@ -28,7 +28,7 @@
           </div>
           <h3 class="font-display text-xl font-bold text-white">{{ item.title }}</h3>
           <p class="mt-3 min-h-[64px] font-body text-sm leading-6 text-slate-400">{{ item.desc }}</p>
-          <div class="mt-6 rounded-sm border border-dashed border-cyber/18 bg-white/[0.03] px-4 py-5 text-center">
+          <div class="mt-6 rounded-xl border border-dashed border-cyber/18 bg-white/[0.03] px-4 py-5 text-center">
             <p class="font-body text-xs text-slate-500">内容待发布</p>
           </div>
         </div>

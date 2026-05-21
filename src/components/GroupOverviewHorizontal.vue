@@ -58,10 +58,10 @@
         <!-- 02 Opportunity -->
         <article id="overview-panel-1" data-panel-index="1" class="overview-panel overview-order-1">
           <div class="overview-inner">
-            <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="mb-6 sm:mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <span class="section-tag font-esports text-[11px]">02 / 产业机遇</span>
-                <h2 class="mt-5 font-display text-4xl font-bold text-white md:text-5xl">
+                <h2 class="mt-4 sm:mt-5 font-display text-3xl sm:text-4xl font-bold text-white md:text-5xl">
                   政策、市场与城市<span class="gradient-text">窗口期</span>
                 </h2>
               </div>
@@ -70,25 +70,26 @@
               </p>
             </div>
 
-            <div class="grid gap-4 lg:grid-cols-3">
-              <div v-for="card in policyCards" :key="card.title" class="glass-card hud-corner rounded-sm p-6">
-                <h3 class="font-display text-xl font-bold text-white">{{ card.title }}</h3>
-                <div class="mt-5 space-y-3">
-                  <div v-for="item in card.items" :key="item.text" class="flex gap-3">
-                    <span v-if="item.year" class="h-fit rounded-sm bg-electric/20 px-2 py-1 font-display text-xs font-bold text-cyber">
+            <div class="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-3">
+              <div v-for="card in policyCards" :key="card.title" class="glass-card rounded-2xl p-4 sm:p-6">
+                <h3 class="font-display text-base sm:text-xl font-bold text-white">{{ card.title }}</h3>
+                <div class="mt-3 sm:mt-5 space-y-2.5 sm:space-y-3">
+                  <div v-for="item in card.items" :key="item.text" class="flex gap-2.5 sm:gap-3">
+                    <span v-if="item.year" class="h-fit rounded-lg bg-electric/20 px-2 py-0.5 sm:py-1 font-display text-xs font-bold text-cyber flex-shrink-0">
                       {{ item.year }}
                     </span>
-                    <p class="font-body text-sm leading-relaxed text-slate-300">{{ item.text }}</p>
+                    <p class="font-body text-[13px] sm:text-sm leading-snug sm:leading-relaxed text-slate-300">{{ item.text }}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="mt-6 grid gap-4 md:grid-cols-3">
-              <div v-for="stat in marketStats" :key="stat.label" class="rounded-sm border border-cyber/15 bg-white/[0.04] p-6">
-                <div class="stat-number gradient-text text-4xl">{{ stat.value }}</div>
-                <div class="mt-3 font-display font-bold text-white">{{ stat.label }}</div>
-                <p class="mt-2 font-body text-sm text-slate-400">{{ stat.desc }}</p>
+            <!-- 市场数据:移动端 3 列并排,留出舒适内边距 -->
+            <div class="mt-4 sm:mt-6 grid grid-cols-3 gap-2.5 sm:gap-4">
+              <div v-for="stat in marketStats" :key="stat.label" class="rounded-2xl border border-cyber/15 bg-white/[0.04] p-3.5 sm:p-6">
+                <div class="stat-number gradient-text text-xl sm:text-4xl leading-tight">{{ stat.value }}</div>
+                <div class="mt-2 sm:mt-3 font-display font-bold text-white text-xs sm:text-base leading-snug">{{ stat.label }}</div>
+                <p class="hidden sm:block mt-2 font-body text-sm text-slate-400">{{ stat.desc }}</p>
               </div>
             </div>
           </div>
@@ -96,16 +97,16 @@
 
         <!-- 03 Blueprint -->
         <article id="overview-panel-2" data-panel-index="2" class="overview-panel overview-order-2">
-          <div class="overview-inner grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <div class="overview-inner grid gap-6 sm:gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
             <div>
               <span class="section-tag font-esports text-[11px]">03 / 投资蓝图</span>
-              <h2 class="mt-5 font-display text-4xl font-bold text-white md:text-5xl">
+              <h2 class="mt-4 sm:mt-5 font-display text-3xl sm:text-4xl font-bold text-white md:text-5xl">
                 分期投入，<span class="gradient-text">分区落地</span>
               </h2>
-              <p class="mt-5 font-body leading-relaxed text-slate-400">
+              <p class="mt-4 sm:mt-5 font-body text-sm sm:text-base leading-relaxed text-slate-400">
                 以赛事中心、俱乐部基地、直播孵化、电竞教育、商业配套为核心，形成可运营、可招商、可持续扩展的产业空间。
               </p>
-              <div class="mt-8 space-y-4">
+              <div class="mt-5 sm:mt-8 space-y-3 sm:space-y-4">
                 <div v-for="phase in investPhases" :key="phase.name">
                   <div class="mb-1.5 flex items-center justify-between">
                     <span class="font-body text-sm text-slate-300">{{ phase.name }}</span>
@@ -118,11 +119,12 @@
               </div>
             </div>
 
-            <div class="grid gap-3 sm:grid-cols-2">
-              <div v-for="zone in buildZones" :key="zone.name" class="rounded-sm border border-cyber/15 bg-[#071224]/80 p-5">
-                <div class="mb-4 h-1 w-10 rounded-full" :style="{ background: zone.color, boxShadow: `0 0 12px ${zone.color}80` }"></div>
-                <h3 class="font-display font-bold text-white">{{ zone.name }}</h3>
-                <div class="mt-3 font-esports text-lg" :style="{ color: zone.color }">{{ zone.area }}</div>
+            <!-- 6 个建设分区:移动 2 列并排,留出舒适内边距 -->
+            <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+              <div v-for="zone in buildZones" :key="zone.name" class="rounded-2xl border border-cyber/15 bg-[#071224]/80 p-3.5 sm:p-5">
+                <div class="mb-3 sm:mb-4 h-1 w-8 sm:w-10 rounded-full" :style="{ background: zone.color, boxShadow: `0 0 12px ${zone.color}80` }"></div>
+                <h3 class="font-display font-bold text-white text-sm sm:text-base leading-snug">{{ zone.name }}</h3>
+                <div class="mt-2 sm:mt-3 font-esports text-base sm:text-lg" :style="{ color: zone.color }">{{ zone.area }}</div>
               </div>
             </div>
           </div>
@@ -163,7 +165,7 @@
               <div>
                 <span class="section-tag font-esports text-[11px]">05 / 核心团队</span>
                 <h2 class="mt-5 font-display text-4xl font-bold text-white md:text-5xl">
-                  电竞科技<span class="gradient-text">管理团队</span>
+                  <span class="gradient-text">管理团队</span>
                 </h2>
               </div>
               <p class="max-w-xl font-body text-sm leading-relaxed text-slate-400">
@@ -171,23 +173,25 @@
               </p>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <div v-for="member in team" :key="member.name" class="glass-card hud-corner overflow-hidden rounded-sm">
-                <div class="relative h-40 bg-[#0A1628] xl:h-48">
+            <!-- 移动:2 列方形,4 张一屏看完;桌面:4 列 3:4 portrait,人像完整 -->
+            <div class="grid grid-cols-2 gap-2.5 sm:gap-4 xl:grid-cols-4">
+              <div v-for="member in team" :key="member.name" class="glass-card overflow-hidden rounded-2xl">
+                <div class="relative aspect-square sm:aspect-[3/4] bg-[#0A1628]">
                   <img
                     :src="member.photo"
                     :alt="member.name"
-                    class="h-full w-full object-contain object-top xl:object-cover"
+                    class="h-full w-full object-cover object-top"
                     :style="{ objectPosition: member.pos }"
                     loading="lazy"
                   />
                   <div class="absolute inset-0 bg-gradient-to-t from-[#0A1628] via-[#0A162880] to-transparent"></div>
-                  <h3 class="absolute bottom-3 left-4 font-esports text-lg font-bold text-white">{{ member.name }}</h3>
+                  <h3 class="absolute bottom-1.5 left-2.5 sm:bottom-3 sm:left-4 font-esports text-sm sm:text-lg font-bold text-white">{{ member.name }}</h3>
                 </div>
-                <div class="p-4">
-                  <div class="min-h-[32px] font-body text-xs tracking-wide text-cyber">{{ member.role }}</div>
-                  <div class="mt-3 flex flex-wrap gap-1.5">
-                    <span v-for="tag in member.tags" :key="tag" class="rounded-sm border border-electric/20 bg-electric/10 px-2 py-0.5 font-body text-[10px] text-star">
+                <div class="p-2 sm:p-4">
+                  <div class="font-body text-[10px] sm:text-xs tracking-wide text-cyber leading-tight sm:min-h-[32px] line-clamp-2">{{ member.role }}</div>
+                  <!-- tags 只在 sm 及以上显示,移动端节省高度 -->
+                  <div class="hidden sm:flex mt-3 flex-wrap gap-1.5">
+                    <span v-for="tag in member.tags" :key="tag" class="rounded-full border border-electric/20 bg-electric/10 px-2 py-0.5 font-body text-[10px] text-star">
                       {{ tag }}
                     </span>
                   </div>

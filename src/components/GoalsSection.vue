@@ -15,7 +15,7 @@
       <!-- Economic stats: 4 big count-up numbers -->
       <div ref="statsRef" class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-20">
         <div v-for="(stat, i) in economicStats" :key="stat.label"
-          class="glass-card neon-hover rounded-sm p-4 sm:p-8 text-center relative hud-corner slide-up"
+          class="glass-card neon-hover rounded-2xl p-4 sm:p-8 text-center relative slide-up"
           :class="`delay-${(i+1)*100}`">
           <!-- Accent top line -->
           <div class="absolute top-0 left-1/4 right-1/4 h-px"
@@ -49,7 +49,7 @@
         </div>
         <div class="grid md:grid-cols-3 gap-6">
           <div v-for="(value, i) in industryValues" :key="value.title"
-            class="glass-card neon-hover rounded-sm p-8 text-center hud-corner slide-up"
+            class="glass-card neon-hover rounded-2xl p-8 text-center slide-up"
             :class="`delay-${(i+1)*150}`">
             <div class="w-14 h-14 mx-auto mb-5 rounded-full flex items-center justify-center"
               :style="{ background: value.color + '20', border: `1px solid ${value.color}50` }">

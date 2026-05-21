@@ -28,14 +28,14 @@
       <div class="grid lg:grid-cols-2 gap-12 mb-20">
         <!-- Vision -->
         <div class="space-y-6 slide-left">
-          <div class="glass-card rounded-sm p-7 hud-corner">
+          <div class="glass-card rounded-2xl p-7">
             <h3 class="font-display font-bold text-cyber text-sm tracking-widest uppercase mb-3">核心目标</h3>
             <p class="text-white font-body text-lg leading-relaxed">
               创世界一流<span class="text-cyber font-bold">百年</span>电竞俱乐部，
               建<span class="text-cyber font-bold">百亿</span>产值数字经济产业园
             </p>
           </div>
-          <div class="glass-card rounded-sm p-7 hud-corner">
+          <div class="glass-card rounded-2xl p-7">
             <h3 class="font-display font-bold text-cyber text-sm tracking-widest uppercase mb-3">生态愿景</h3>
             <p class="text-white font-body text-lg leading-relaxed">
               构建集<span class="text-electric font-bold">赛事</span>、
@@ -47,11 +47,11 @@
 
           <!-- Key numbers -->
           <div class="grid grid-cols-2 gap-4">
-            <div class="glass-card rounded-sm p-6 text-center">
+            <div class="glass-card rounded-xl p-6 text-center">
               <div class="stat-number text-4xl gradient-text">20亿</div>
               <div class="text-slate-400 text-sm mt-2 font-body">总投资规模（元）</div>
             </div>
-            <div class="glass-card rounded-sm p-6 text-center">
+            <div class="glass-card rounded-xl p-6 text-center">
               <div class="stat-number text-4xl gradient-text">50万</div>
               <div class="text-slate-400 text-sm mt-2 font-body">规划建设面积（㎡）</div>
             </div>
@@ -63,9 +63,9 @@
           <h3 class="font-display font-bold text-white text-xl mb-6">园区功能分区</h3>
           <div class="space-y-3">
             <div v-for="(zone, i) in zones" :key="zone.name"
-              class="glass-card rounded-sm p-4 flex items-center gap-4 hover:border-cyber/40 transition-all duration-300 group"
+              class="glass-card rounded-xl p-4 flex items-center gap-4 hover:border-cyber/40 transition-all duration-300 group"
               :class="`slide-up delay-${(i+1)*100}`">
-              <div class="flex-shrink-0 w-10 h-10 rounded-sm flex items-center justify-center text-lg"
+              <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg"
                 :style="{ background: zone.color + '20', border: `1px solid ${zone.color}40` }">
                 {{ zone.icon }}
               </div>

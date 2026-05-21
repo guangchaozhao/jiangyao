@@ -104,7 +104,7 @@
         <a href="#company"
           v-magnetic="0.4"
           class="cyber-btn group relative px-10 py-3.5 bg-gradient-to-r from-electric to-cyber text-white
-                 font-esports font-bold text-sm rounded-sm
+                 font-esports font-bold text-sm rounded-full
                  hover:shadow-[0_0_40px_rgba(0,212,255,0.5)] transition-all duration-300 cursor-pointer overflow-hidden">
           了解集团
           <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>
@@ -112,7 +112,7 @@
         <a href="#contact"
           v-magnetic="0.4"
           class="cyber-btn px-10 py-3.5 border border-cyber/50 text-cyber font-esports font-bold text-sm
-                 rounded-sm hover:bg-cyber/10 hover:border-cyber hover:shadow-[0_0_20px_rgba(0,212,255,0.2)]
+                 rounded-full hover:bg-cyber/10 hover:border-cyber hover:shadow-[0_0_20px_rgba(0,212,255,0.2)]
                  transition-all duration-300 cursor-pointer overflow-hidden">
           合作洽谈
         </a>
@@ -121,7 +121,7 @@
       <!-- Inline video player -->
       <div class="slide-up delay-500 max-w-2xl mx-auto mb-10 group cursor-pointer"
         @click="videoModal = true">
-        <div class="relative rounded-sm overflow-hidden border border-cyber/20
+        <div class="relative rounded-2xl overflow-hidden border border-cyber/20
                     hover:border-cyber/50 hover:shadow-[0_0_40px_rgba(0,212,255,0.15)]
                     transition-all duration-300">
           <video
@@ -173,7 +173,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
               </button>
-              <div class="border border-cyber/30 rounded-sm overflow-hidden shadow-[0_0_80px_rgba(0,212,255,0.2)]">
+              <div class="border border-cyber/30 rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(0,212,255,0.2)]">
                 <video
                   ref="modalVid"
                   :src="videoSrc"
@@ -193,7 +193,7 @@
       </Teleport>
 
       <!-- Stats bar -->
-      <div class="slide-up delay-600 grid grid-cols-2 md:grid-cols-4 max-w-3xl mx-auto overflow-hidden rounded-sm border border-cyber/15">
+      <div class="slide-up delay-600 grid grid-cols-2 md:grid-cols-4 max-w-3xl mx-auto overflow-hidden rounded-2xl border border-cyber/15">
         <div v-for="(stat, i) in heroStats" :key="stat.label"
           class="bg-[#0A1628]/80 px-6 py-5 text-center border-r border-cyber/10 last:border-r-0 backdrop-blur-sm
                  hover:bg-cyber/5 transition-colors duration-200">

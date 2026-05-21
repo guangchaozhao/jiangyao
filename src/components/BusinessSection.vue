@@ -20,33 +20,40 @@ const showEsportsGallery = ref(false)
         <div class="cyber-divider w-24 mx-auto mt-6"></div>
       </div>
 
-      <!-- Bento Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-auto">
+      <!-- Bento Grid — 不对称 + 混合圆角 -->
+      <div class="grid grid-cols-1 md:grid-cols-6 md:grid-rows-[auto_auto_auto] gap-4">
 
-        <!-- 1. Star Club 大卡 (2/3宽) -->
-        <div class="md:col-span-4 glass-card neon-hover rounded-sm p-8 relative overflow-hidden hud-corner slide-up">
-          <div class="absolute top-0 right-0 w-48 h-48 bg-cyber/5 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="relative z-10">
-            <div class="flex items-center gap-3 mb-5">
-              <img :src="xingchenLogo" alt="星辰电竞" class="w-12 h-12 object-contain flex-shrink-0" />
+        <!-- 1. Star Club 主卡 4×2,rounded-3xl(全场最大圆角,视觉锚点) -->
+        <div class="md:col-span-4 md:row-span-2 glass-card neon-hover rounded-3xl p-8 md:p-10 relative overflow-hidden slide-up flex flex-col">
+          <!-- 角落大数字标识 -->
+          <div class="absolute top-6 right-7 font-esports font-black text-cyber/15 text-[88px] leading-none pointer-events-none select-none">01</div>
+          <div class="absolute top-0 right-0 w-64 h-64 bg-cyber/8 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute bottom-0 left-0 w-48 h-48 bg-electric/6 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10 flex flex-col h-full">
+            <div class="flex items-center gap-4 mb-6">
+              <img :src="xingchenLogo" alt="星辰电竞" class="w-14 h-14 object-contain flex-shrink-0" />
               <div>
-                <h3 class="font-esports font-bold text-white text-xl">Star Club 电竞俱乐部</h3>
-                <p class="text-cyber text-xs font-body mt-0.5">致力于打造行业标杆的「百年电竞俱乐部」</p>
+                <h3 class="font-esports font-bold text-white text-xl md:text-2xl">Star Club 电竞俱乐部</h3>
+                <p class="text-cyber text-xs font-body mt-1">致力于打造行业标杆的「百年电竞俱乐部」</p>
               </div>
             </div>
-            <p class="text-slate-400 font-body text-sm leading-relaxed mb-5">
+
+            <p class="text-slate-400 font-body text-sm md:text-base leading-relaxed mb-6 max-w-2xl">
               三十年冠军经验团队领衔，以中国电竞开拓者马天元（MTY）为核心，联合星竞威武集团顶级资源，
               组建热门项目职业战队，构建完善青训体系，自主策划品牌赛事，打造世界顶级竞技IP。
             </p>
-            <div class="flex flex-wrap gap-2 mb-5">
+
+            <div class="flex flex-wrap gap-2 mb-auto">
               <span v-for="t in ['职业战队', '青训体系', '品牌赛事', '30年冠军经验', 'IP运营']" :key="t"
-                class="text-xs px-3 py-1 rounded-sm bg-cyber/8 border border-cyber/20 text-star font-body">{{ t }}</span>
+                class="text-xs px-3 py-1.5 rounded-full bg-cyber/10 border border-cyber/25 text-star font-body">{{ t }}</span>
             </div>
+
             <button type="button" @click="showEsportsGallery = true"
-              class="cyber-btn px-6 py-2.5 border border-cyber/50 text-cyber
-                     font-esports font-bold text-xs rounded-sm
-                     hover:bg-cyber/10 hover:border-cyber hover:shadow-[0_0_16px_rgba(0,212,255,0.3)]
-                     transition-all duration-300 cursor-pointer inline-flex items-center justify-center gap-2">
+              class="cyber-btn mt-7 self-start px-6 py-3 border border-cyber/50 text-cyber
+                     font-esports font-bold text-xs rounded-full
+                     hover:bg-cyber/10 hover:border-cyber hover:shadow-[0_0_24px_rgba(0,212,255,0.35)]
+                     transition-all duration-300 cursor-pointer inline-flex items-center gap-2">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -56,19 +63,21 @@ const showEsportsGallery = ref(false)
           </div>
         </div>
 
-        <!-- 2. Doud AI 小卡 (1/3宽) -->
-        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-100 flex flex-col">
-          <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-electric/10 rounded-full blur-2xl"></div>
-          <div class="w-10 h-10 rounded-sm bg-electric/15 border border-electric/30 flex items-center justify-center text-xl mb-4">🤖</div>
-          <h3 class="font-esports font-bold text-white text-lg mb-2">Doud AI</h3>
+        <!-- 2. Doud AI 右上 2×1,rounded-2xl -->
+        <div class="md:col-span-2 glass-card neon-hover rounded-2xl p-6 relative overflow-hidden slide-up delay-100 flex flex-col">
+          <div class="absolute -bottom-6 -right-6 w-28 h-28 bg-electric/12 rounded-full blur-2xl"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-11 h-11 rounded-xl bg-electric/15 border border-electric/30 flex items-center justify-center text-xl">🤖</div>
+            <div class="font-esports font-black text-electric/20 text-3xl leading-none">02</div>
+          </div>
+          <h3 class="font-esports font-bold text-white text-lg mb-1">Doud AI</h3>
           <p class="text-cyber text-xs font-body mb-3">超级视频工厂</p>
           <p class="text-slate-400 text-xs font-body leading-relaxed flex-1">
             中国AI技术开拓者，资深专家团队，助力政企单位节能增效，提供AI时代技术服务与人才培养。
           </p>
-          <!-- 案例库按钮 -->
           <button @click="showGallery = true"
             class="cyber-btn mt-5 w-full py-2.5 border border-electric/50 text-electric
-                   font-esports font-bold text-xs rounded-sm
+                   font-esports font-bold text-xs rounded-full
                    hover:bg-electric/10 hover:border-electric hover:shadow-[0_0_16px_rgba(26,111,255,0.3)]
                    transition-all duration-300 cursor-pointer flex items-center justify-center gap-2">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,15 +90,16 @@ const showEsportsGallery = ref(false)
           </button>
         </div>
 
-        <!-- 案例库弹窗 -->
         <VideoGalleryModal :show="showGallery" @close="showGallery = false" />
-        <!-- 电竞俱乐部战队影像库弹窗 -->
         <EsportsGalleryModal :show="showEsportsGallery" @close="showEsportsGallery = false" />
 
-        <!-- 3. 教育学院 窄高卡 -->
-        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-200">
+        <!-- 3. 教育学院 右中 2×1,rounded-2xl -->
+        <div class="md:col-span-2 glass-card neon-hover rounded-2xl p-6 relative overflow-hidden slide-up delay-200">
           <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500/50 via-cyber/50 to-transparent"></div>
-          <div class="w-10 h-10 rounded-sm bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-xl mb-4">🎓</div>
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-xl">🎓</div>
+            <div class="font-esports font-black text-purple-400/20 text-3xl leading-none">03</div>
+          </div>
           <h3 class="font-esports font-bold text-white text-lg mb-2">电子竞技教育学院</h3>
           <p class="text-slate-400 text-xs font-body leading-relaxed mb-4">
             打造产教融合的电竞人才培养标杆，深度链接高校资源，构建专业教育品牌，推行项目指导式教学。
@@ -102,37 +112,54 @@ const showEsportsGallery = ref(false)
           </div>
         </div>
 
-        <!-- 4. 人才经纪 中卡 -->
-        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-200">
-          <div class="absolute -bottom-4 -right-4 w-20 h-20 bg-cyber/8 rounded-full blur-2xl"></div>
-          <div class="w-10 h-10 rounded-sm bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-xl mb-4">🌟</div>
+        <!-- 4. 人才经纪 底左 2×1,rounded-xl(故意比邻居小一档,做层次) -->
+        <div class="md:col-span-2 glass-card neon-hover rounded-xl p-6 relative overflow-hidden slide-up delay-200">
+          <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-cyber/10 rounded-full blur-2xl"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div class="w-11 h-11 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-xl">🌟</div>
+            <div class="font-esports font-black text-cyan-400/20 text-3xl leading-none">04</div>
+          </div>
           <h3 class="font-esports font-bold text-white text-lg mb-2">人才经纪管理</h3>
           <p class="text-slate-400 text-xs font-body leading-relaxed mb-4">
             建设高标准直播基地，孵化优质直播团队，搭建跨境电商直播平台，打通商业变现全链路。
           </p>
           <div class="grid grid-cols-2 gap-2">
-            <div class="text-center p-2 bg-white/3 rounded-sm">
+            <div class="text-center p-2.5 bg-white/4 rounded-lg">
               <div class="font-esports font-bold text-cyber text-sm">500+</div>
               <div class="text-slate-500 text-[10px] font-body">主播管理</div>
             </div>
-            <div class="text-center p-2 bg-white/3 rounded-sm">
+            <div class="text-center p-2.5 bg-white/4 rounded-lg">
               <div class="font-esports font-bold text-cyber text-sm">1300万</div>
               <div class="text-slate-500 text-[10px] font-body">月度流水</div>
             </div>
           </div>
         </div>
 
-        <!-- 5. 产业融合平台 大卡 (2/3宽) -->
-        <div class="md:col-span-2 glass-card neon-hover rounded-sm p-6 relative overflow-hidden slide-up delay-300">
-          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-electric/50 to-transparent"></div>
-          <div class="w-10 h-10 rounded-sm bg-electric/15 border border-electric/30 flex items-center justify-center text-xl mb-4">🔗</div>
-          <h3 class="font-esports font-bold text-white text-lg mb-2">电竞+产业融合</h3>
-          <p class="text-slate-400 text-xs font-body leading-relaxed mb-4">
-            全生命周期运营支撑，打破信息壁垒，搭建产业资源对接平台，促进企业间深度合作。
-          </p>
-          <div class="flex flex-wrap gap-1.5">
-            <span v-for="s in ['AI服务', '法务', '财务', '人力', '资源对接', '配套保障']" :key="s"
-              class="text-[10px] px-2 py-0.5 bg-electric/10 border border-electric/20 text-star rounded-sm font-body">{{ s }}</span>
+        <!-- 5. 产业融合 底右 4×1 横向卡片(打破竖向节奏)rounded-2xl -->
+        <div class="md:col-span-4 glass-card neon-hover rounded-2xl p-6 md:p-7 relative overflow-hidden slide-up delay-300">
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-electric/60 via-cyber/40 to-transparent"></div>
+          <div class="absolute top-5 right-7 font-esports font-black text-electric/15 text-5xl leading-none pointer-events-none">05</div>
+
+          <div class="flex flex-col md:flex-row md:items-center gap-5 md:gap-7 relative z-10">
+            <!-- 左:图标 + 主标题 -->
+            <div class="flex items-center gap-4 md:flex-col md:items-start md:gap-3 md:min-w-[200px]">
+              <div class="w-12 h-12 rounded-xl bg-electric/15 border border-electric/30 flex items-center justify-center text-xl flex-shrink-0">🔗</div>
+              <div>
+                <h3 class="font-esports font-bold text-white text-lg md:text-xl">电竞+产业融合</h3>
+                <p class="text-electric text-xs font-body mt-0.5">全生命周期运营</p>
+              </div>
+            </div>
+
+            <!-- 中:描述 -->
+            <p class="text-slate-400 font-body text-sm leading-relaxed flex-1 md:max-w-md">
+              打破信息壁垒，搭建产业资源对接平台，促进企业间深度合作。
+            </p>
+
+            <!-- 右:tag pills -->
+            <div class="flex flex-wrap gap-1.5 md:max-w-[280px]">
+              <span v-for="s in ['AI服务', '法务', '财务', '人力', '资源对接', '配套保障']" :key="s"
+                class="text-[10px] px-2.5 py-1 bg-electric/10 border border-electric/25 text-star rounded-full font-body">{{ s }}</span>
+            </div>
           </div>
         </div>
 

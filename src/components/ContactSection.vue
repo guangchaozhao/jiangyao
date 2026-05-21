@@ -21,8 +21,8 @@
         <!-- Left: contact info -->
         <div class="lg:col-span-2 space-y-6 slide-left">
           <div v-for="info in contactInfos" :key="info.label"
-            class="glass-card rounded-sm p-5 flex items-start gap-4 neon-hover">
-            <div class="w-10 h-10 rounded-sm flex items-center justify-center flex-shrink-0"
+            class="glass-card rounded-xl p-5 flex items-start gap-4 neon-hover">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
               :style="{ background: info.color + '18', border: `1px solid ${info.color}30` }">
               <component :is="info.icon" class="w-5 h-5" :style="{ color: info.color }" />
             </div>
@@ -33,7 +33,7 @@
           </div>
 
           <!-- CTA slogan -->
-          <div class="glass-card rounded-sm p-6 border-cyber/20 hud-corner">
+          <div class="glass-card rounded-2xl p-6 border-cyber/20">
             <div class="text-cyber font-esports text-sm tracking-wider mb-2">江曜所至，皆为星辰</div>
             <p class="text-slate-400 text-xs font-body leading-relaxed">
               我们正处于快速发展阶段，诚挚邀请各界资本、品牌、政府及产业合作伙伴加入这场改变中国电竞格局的大创举。
@@ -43,7 +43,7 @@
 
         <!-- Right: form -->
         <div class="lg:col-span-3 slide-right">
-          <div class="glass-card rounded-sm p-8 hud-corner relative">
+          <div class="glass-card rounded-2xl p-8 relative">
             <!-- Top accent -->
             <div class="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyber/60 to-transparent"></div>
 
@@ -70,15 +70,10 @@
                     class="form-input" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">合作类型</label>
-                  <select v-model="form.type" class="form-input">
-                    <option value="">请选择</option>
-                    <option value="invest">资本投资</option>
-                    <option value="sponsor">品牌赞助</option>
-                    <option value="settle">企业入驻</option>
-                    <option value="event">赛事合作</option>
-                    <option value="media">媒体合作</option>
-                    <option value="other">其他</option>
+                  <label class="form-label">合作类型 <span class="text-cyber">*</span></label>
+                  <select v-model="form.cooperationType" class="form-input" required>
+                    <option value="" disabled>请选择</option>
+                    <option v-for="type in cooperationTypes" :key="type" :value="type">{{ type }}</option>
                   </select>
                 </div>
               </div>
@@ -87,14 +82,26 @@
               <div class="form-group">
                 <label class="form-label">留言内容 <span class="text-cyber">*</span></label>
                 <textarea v-model="form.message" rows="4"
-                  placeholder="请简要描述您的合作意向或问题..."
+                  :placeholder="`请简要描述您的合作意向或问题，至少 ${MESSAGE_MIN_LENGTH} 个字...`"
                   class="form-input resize-none" required></textarea>
+                <p class="text-[11px] text-slate-500 font-body">
+                  留言内容至少 {{ MESSAGE_MIN_LENGTH }} 个字
+                </p>
               </div>
+              <input
+                v-model="form.website"
+                type="text"
+                name="website"
+                autocomplete="off"
+                tabindex="-1"
+                aria-hidden="true"
+                class="honeypot-input"
+              />
 
               <!-- Submit -->
               <button type="submit"
                 :disabled="submitting || submitted"
-                class="cyber-btn w-full py-3.5 font-esports font-bold text-sm rounded-sm
+                class="cyber-btn w-full py-3.5 font-esports font-bold text-sm rounded-full
                        transition-all duration-300 relative overflow-hidden"
                 :class="submitted
                   ? 'bg-green-500/20 border border-green-500/50 text-green-400'
@@ -103,13 +110,13 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                   </svg>
-                  提交成功，我们将尽快与您联系！
+                  合作申请已提交，我们会尽快联系您
                 </span>
                 <span v-else-if="submitting">发送中...</span>
                 <span v-else>立即提交洽谈申请 →</span>
               </button>
               <p v-if="error" class="text-red-400 text-xs text-center font-body mt-2">
-                提交失败，请稍后重试或直接发送邮件联系我们</p>
+                {{ error }}</p>
             </form>
           </div>
         </div>
@@ -121,38 +128,59 @@
 <script setup>
 import { ref, h } from 'vue'
 
-const form = ref({ name: '', phone: '', company: '', type: '', message: '' })
+const COOPERATION_LEADS_ENDPOINT = 'https://doudai.cc/api/cooperation-leads'
+const MESSAGE_MIN_LENGTH = 5
+const cooperationTypes = ['资本投资', '品牌赞助', '企业入驻', '赛事合作', '媒体合作', '其他']
+const createEmptyForm = () => ({
+  name: '',
+  phone: '',
+  company: '',
+  cooperationType: '',
+  message: '',
+  website: '',
+})
+
+const form = ref(createEmptyForm())
 const submitting = ref(false)
 const submitted = ref(false)
-const error = ref(false)
-
-// 替换为你的 Formspree 表单 ID: https://formspree.io/new
-const FORMSPREE_ID = 'YOUR_FORM_ID'
+const error = ref('')
 
 async function handleSubmit() {
+  error.value = ''
+  const message = form.value.message.trim()
+
+  if (message.length < MESSAGE_MIN_LENGTH) {
+    error.value = `留言内容至少填写 ${MESSAGE_MIN_LENGTH} 个字`
+    return
+  }
+
   submitting.value = true
-  error.value = false
   try {
-    const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+    const res = await fetch(COOPERATION_LEADS_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        姓名: form.value.name,
-        电话: form.value.phone,
-        公司: form.value.company,
-        合作类型: form.value.type,
-        留言: form.value.message,
+        name: form.value.name.trim(),
+        phone: form.value.phone.trim(),
+        company: form.value.company.trim(),
+        cooperationType: form.value.cooperationType,
+        message,
+        pageUrl: window.location.href,
+        sourceSite: 'jiangyao.cc',
+        website: form.value.website.trim(),
       }),
     })
-    if (res.ok) {
+
+    const data = await res.json().catch(() => ({}))
+    if (data?.success === true) {
       submitted.value = true
-      form.value = { name: '', phone: '', company: '', type: '', message: '' }
+      form.value = createEmptyForm()
       setTimeout(() => { submitted.value = false }, 6000)
     } else {
-      error.value = true
+      error.value = data?.error || '提交失败，请稍后重试或直接发送邮件联系我们'
     }
   } catch {
-    error.value = true
+    error.value = '提交失败，请稍后重试或直接发送邮件联系我们'
   } finally {
     submitting.value = false
   }
@@ -194,8 +222,8 @@ const contactInfos = [
   width: 100%;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(0,212,255,0.15);
-  border-radius: 2px;
-  padding: 10px 14px;
+  border-radius: 10px;
+  padding: 11px 14px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   color: #E2E8F0;
@@ -212,5 +240,14 @@ const contactInfos = [
 select.form-input option {
   background: #0A1628;
   color: #E2E8F0;
+}
+
+.honeypot-input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 </style>
