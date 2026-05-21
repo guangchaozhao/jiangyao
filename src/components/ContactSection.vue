@@ -8,7 +8,7 @@
       <!-- Header -->
       <div class="text-center mb-14 slide-up">
         <span class="section-tag font-esports text-[11px]">CONTACT · 合作洽谈</span>
-        <h2 class="font-display font-bold text-4xl md:text-5xl text-white mt-4">
+        <h2 class="reveal-clip font-display font-bold text-4xl md:text-5xl text-white mt-4">
           欢迎共同<span class="gradient-text">开创未来</span>
         </h2>
         <p class="text-slate-400 font-body mt-3 max-w-xl mx-auto text-sm">

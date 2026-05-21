@@ -17,7 +17,7 @@ export function initScrollReveal() {
     { threshold: 0.12, rootMargin: '0px 0px -12% 0px' }
   )
 
-  document.querySelectorAll('.slide-up, .slide-left, .slide-right, .fade-in, .scale-in').forEach((el) => {
+  document.querySelectorAll('.slide-up, .slide-left, .slide-right, .fade-in, .scale-in, .reveal-clip, .reveal-clip-hero').forEach((el) => {
     observer.observe(el)
   })
 }

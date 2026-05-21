@@ -6,7 +6,7 @@
       <!-- Header -->
       <div class="text-center mb-16 slide-up">
         <span class="section-tag font-esports text-[11px]">05 / 目标展望</span>
-        <h2 class="font-display font-bold text-4xl md:text-5xl text-white mt-4">
+        <h2 class="reveal-clip font-display font-bold text-4xl md:text-5xl text-white mt-4">
           经济目标与<span class="gradient-text">产业价值</span>
         </h2>
         <div class="cyber-divider w-24 mx-auto mt-6"></div>

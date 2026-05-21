@@ -1,5 +1,5 @@
 <template>
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-cosmic scanlines">
+  <section id="hero-root" class="relative min-h-screen flex items-center justify-center overflow-hidden bg-cosmic scanlines">
     <!-- ① Aurora 极光层 -->
     <div class="aurora-layer" aria-hidden="true">
       <div class="aurora-blob aurora-blob-1"></div>
@@ -64,13 +64,13 @@
       </div>
 
       <!-- Glitch title -->
-      <div class="slide-up delay-100 mb-6">
+      <div class="mb-6">
         <h1
-          class="mx-auto max-w-6xl font-esports font-black text-4xl leading-[1.08] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl gradient-text-white glitch neon-text-blue"
+          class="reveal-clip-hero mx-auto max-w-6xl font-esports font-black text-4xl leading-[1.08] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl gradient-text-white glitch neon-text-blue"
           data-text="江曜擎天电竞发展">
           江曜擎天电竞发展
         </h1>
-        <div class="mt-3 font-esports font-black text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl gradient-text-white neon-text-blue">
+        <div class="reveal-clip-hero mt-3 font-esports font-black text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl gradient-text-white neon-text-blue" style="transition-delay: 180ms">
           （广东）有限公司
         </div>
       </div>
@@ -102,6 +102,7 @@
       <!-- CTA -->
       <div class="slide-up delay-400 flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
         <a href="#company"
+          v-magnetic="0.4"
           class="cyber-btn group relative px-10 py-3.5 bg-gradient-to-r from-electric to-cyber text-white
                  font-esports font-bold text-sm rounded-sm
                  hover:shadow-[0_0_40px_rgba(0,212,255,0.5)] transition-all duration-300 cursor-pointer overflow-hidden">
@@ -109,6 +110,7 @@
           <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>
         </a>
         <a href="#contact"
+          v-magnetic="0.4"
           class="cyber-btn px-10 py-3.5 border border-cyber/50 text-cyber font-esports font-bold text-sm
                  rounded-sm hover:bg-cyber/10 hover:border-cyber hover:shadow-[0_0_20px_rgba(0,212,255,0.2)]
                  transition-all duration-300 cursor-pointer overflow-hidden">
@@ -524,6 +526,14 @@ function initStars(canvas) {
 
 onMounted(() => {
   if (starCanvas.value) initStars(starCanvas.value)
+
+  // Hero 是首屏,不依赖 IntersectionObserver,直接触发进场
+  requestAnimationFrame(() => {
+    document.querySelectorAll(
+      '#hero-root .reveal-clip-hero, #hero-root .reveal-clip, #hero-root .slide-up'
+    ).forEach(el => el.classList.add('is-visible'))
+  })
+
   setTimeout(() => {
     typeText(text1, displayText1, typing1, () => {
       typing2.value = true

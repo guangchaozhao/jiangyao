@@ -15,7 +15,7 @@
       <!-- Header -->
       <div class="text-center mb-16 slide-up">
         <span class="section-tag font-esports text-[11px]">03 / 园区规划</span>
-        <h2 class="font-display font-bold text-4xl md:text-5xl text-white mt-4">
+        <h2 class="reveal-clip font-display font-bold text-4xl md:text-5xl text-white mt-4">
           "世界电竞<span class="gradient-text">新地标</span>"
         </h2>
         <div class="cyber-divider w-24 mx-auto mt-6"></div>

@@ -92,6 +92,44 @@ body {
   will-change: auto;
 }
 
+/* Title curtain reveal — clip-path 揭幕 + letter-spacing 收紧 */
+.reveal-clip {
+  clip-path: inset(0 0 102% 0);
+  -webkit-clip-path: inset(0 0 102% 0);
+  letter-spacing: 0.08em;
+  transform: translateY(8px);
+  transition:
+    clip-path 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+    -webkit-clip-path 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+    letter-spacing 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: clip-path, letter-spacing, transform;
+}
+.reveal-clip.is-visible {
+  clip-path: inset(0 0 0% 0) !important;
+  -webkit-clip-path: inset(0 0 0% 0) !important;
+  letter-spacing: normal !important;
+  transform: none !important;
+  will-change: auto;
+}
+/* Hero 主标题:opacity + transform + letter-spacing 进场,不裁切 text-shadow,保留 neon 粒子光晕 */
+.reveal-clip-hero {
+  opacity: 0;
+  transform: translateY(28px);
+  letter-spacing: 0.12em;
+  transition:
+    opacity 1200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1200ms cubic-bezier(0.16, 1, 0.3, 1),
+    letter-spacing 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, letter-spacing;
+}
+.reveal-clip-hero.is-visible {
+  opacity: 1 !important;
+  transform: none !important;
+  letter-spacing: normal !important;
+  will-change: auto;
+}
+
 /* Delay utilities */
 .delay-100 { transition-delay: var(--reveal-stagger-step); }
 .delay-150 { transition-delay: calc(var(--reveal-stagger-step) * 1.5); }
@@ -143,13 +181,31 @@ body {
   text-shadow: 0 0 20px rgba(26,111,255,0.8), 0 0 40px rgba(26,111,255,0.4);
 }
 
-/* Glass card */
+/* @property 让光斑颜色可以平滑过渡(用于 spotlight) */
+@property --spot-color {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: rgba(0, 212, 255, 0);
+}
+
+/* Glass card — 背景同时承载半透明底色 + 跟随鼠标的径向光斑(无伪元素,避免与 .hud-corner 冲突) */
 .glass-card {
-  background: rgba(10, 22, 40, 0.7);
+  --spot-x: 50%;
+  --spot-y: 50%;
+  background-color: rgba(10, 22, 40, 0.7);
+  background-image: radial-gradient(
+    260px circle at var(--spot-x) var(--spot-y),
+    var(--spot-color),
+    transparent 70%
+  );
   border: 1px solid rgba(0, 212, 255, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  transition:
+    --spot-color 320ms ease,
+    border-color 0.3s,
+    box-shadow 0.3s,
+    transform 0.3s;
 }
 .glass-card:hover {
   border-color: rgba(0, 212, 255, 0.5);
@@ -209,7 +265,7 @@ body {
   font-family: 'Orbitron', 'Space Grotesk', sans-serif;
 }
 
-/* Glitch text effect */
+/* Glitch text effect — 仅 hover 触发,不再常驻消耗 GPU */
 .glitch {
   position: relative;
 }
@@ -223,35 +279,40 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  opacity: 0;
+  pointer-events: none;
 }
 .glitch::before {
   left: 2px;
   text-shadow: none;
   clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
-  animation: glitch-top 3s infinite linear;
   filter: hue-rotate(180deg) brightness(1.5);
-  opacity: 0.7;
 }
 .glitch::after {
   left: -2px;
   clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
-  animation: glitch-bottom 3s infinite linear;
   filter: hue-rotate(-30deg) brightness(1.5);
-  opacity: 0.7;
+}
+.glitch:hover::before {
+  animation: glitch-top 0.6s linear 1;
+}
+.glitch:hover::after {
+  animation: glitch-bottom 0.6s linear 1;
 }
 @keyframes glitch-top {
-  0%, 90%, 100% { transform: translate(0); opacity: 0; }
-  92% { transform: translate(-3px, 1px); opacity: 0.7; }
-  94% { transform: translate(3px, -1px); opacity: 0.7; }
-  96% { transform: translate(-2px); opacity: 0.7; }
-  98% { transform: translate(2px, 1px); opacity: 0.7; }
+  0%   { transform: translate(0); opacity: 0; }
+  15%  { transform: translate(-3px, 1px); opacity: 0.75; }
+  35%  { transform: translate(3px, -1px); opacity: 0.75; }
+  55%  { transform: translate(-2px, 0); opacity: 0.7; }
+  75%  { transform: translate(2px, 1px); opacity: 0.6; }
+  100% { transform: translate(0); opacity: 0; }
 }
 @keyframes glitch-bottom {
-  0%, 88%, 100% { transform: translate(0); opacity: 0; }
-  90% { transform: translate(3px, 2px); opacity: 0.7; }
-  93% { transform: translate(-3px, -1px); opacity: 0.7; }
-  96% { transform: translate(2px); opacity: 0.7; }
-  99% { transform: translate(-2px, 1px); opacity: 0.7; }
+  0%   { transform: translate(0); opacity: 0; }
+  20%  { transform: translate(3px, 2px); opacity: 0.75; }
+  45%  { transform: translate(-3px, -1px); opacity: 0.7; }
+  70%  { transform: translate(2px, 0); opacity: 0.65; }
+  100% { transform: translate(0); opacity: 0; }
 }
 
 /* Neon border pulse on hover */
@@ -452,10 +513,15 @@ body {
   .slide-right,
   .fade-in,
   .scale-in,
+  .reveal-clip,
+  .reveal-clip-hero,
   .word-reveal .word,
   .stagger-children > * {
     opacity: 1 !important;
     transform: none !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    letter-spacing: normal !important;
     transition: none !important;
     will-change: auto !important;
   }

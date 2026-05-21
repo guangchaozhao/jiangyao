@@ -6,7 +6,7 @@
     <div class="relative mx-auto max-w-7xl px-6">
       <div class="mb-14 text-center slide-up">
         <span class="section-tag font-esports text-[11px]">07 / 集团新闻</span>
-        <h2 class="mt-4 font-display text-4xl font-bold text-white md:text-5xl">
+        <h2 class="reveal-clip mt-4 font-display text-4xl font-bold text-white md:text-5xl">
           集团<span class="gradient-text">新闻中心</span>
         </h2>
         <p class="mx-auto mt-4 max-w-2xl font-body text-sm leading-7 text-slate-400">

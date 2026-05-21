@@ -14,7 +14,7 @@ const showEsportsGallery = ref(false)
     <div class="max-w-7xl mx-auto px-6">
       <div class="text-center mb-16 slide-up">
         <span class="section-tag font-esports text-[11px]">04 / 核心业务</span>
-        <h2 class="font-display font-bold text-4xl md:text-5xl text-white mt-4">
+        <h2 class="reveal-clip font-display font-bold text-4xl md:text-5xl text-white mt-4">
           技术 + 经验的<span class="gradient-text">竞争壁垒</span>
         </h2>
         <div class="cyber-divider w-24 mx-auto mt-6"></div>
