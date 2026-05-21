@@ -12,6 +12,7 @@
       <!-- Nav links -->
       <div class="hidden lg:flex items-center gap-5 xl:gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <a v-for="item in navItems" :key="item.href" :href="item.href"
+          @click="handleNavClick($event, item)"
           class="relative text-sm transition-colors duration-200 cursor-pointer font-body tracking-wide py-1 group"
           :class="activeSection === item.id ? 'text-cyber' : 'text-slate-400 hover:text-white'">
           {{ item.label }}
@@ -36,7 +37,7 @@
       <div v-if="mobileOpen" class="lg:hidden bg-[#050B1A]/98 backdrop-blur-md border-t border-cyber/10 px-6 py-4">
         <div class="flex flex-col">
           <a v-for="item in navItems" :key="item.href" :href="item.href"
-            @click="mobileOpen = false"
+            @click="handleNavClick($event, item)"
             class="flex items-center justify-between py-3 border-b border-white/5 transition-colors"
             :class="activeSection === item.id ? 'text-cyber' : 'text-slate-400'">
             <span class="text-sm font-body">{{ item.label }}</span>
@@ -56,12 +57,13 @@ const jiangyaoLogo = img.jiangyao
 const scrolled = ref(false)
 const mobileOpen = ref(false)
 const activeSection = ref('')
+const overviewActiveId = ref('company')
 
 const navItems = [
-  { label: '集团概况', href: '#company',      id: 'company' },
+  { label: '集团概况', href: '#company',      id: 'company', panel: 0 },
+  { label: '子公司',   href: '#subsidiaries', id: 'subsidiaries', panel: 5 },
   { label: '园区规划', href: '#park',         id: 'park' },
   { label: '核心业务', href: '#business',     id: 'business' },
-  { label: '子公司',   href: '#subsidiaries', id: 'subsidiaries' },
   { label: '新闻中心', href: '#news',         id: 'news' },
   { label: '合作洽谈', href: '#contact',      id: 'contact' },
 ]
@@ -72,20 +74,50 @@ function handleScroll() {
   scrolled.value = window.scrollY > 50
 }
 
+function handleNavClick(event, item) {
+  mobileOpen.value = false
+
+  if (item.panel === undefined) return
+
+  event.preventDefault()
+  activeSection.value = item.id
+  overviewActiveId.value = item.id
+  window.history.pushState(null, '', item.href)
+  window.dispatchEvent(new CustomEvent('jiangyao:overview-go', {
+    detail: {
+      id: item.id,
+      panel: item.panel,
+    },
+  }))
+}
+
+function handleOverviewActive(event) {
+  const id = event.detail?.id
+  if (!id) return
+  overviewActiveId.value = id
+  if (activeSection.value === 'company' || activeSection.value === 'subsidiaries') {
+    activeSection.value = id
+  }
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('jiangyao:overview-active', handleOverviewActive)
 
   // IntersectionObserver for active section
   observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) activeSection.value = e.target.id
+        if (!e.isIntersecting) return
+        activeSection.value = e.target.id === 'company' ? overviewActiveId.value : e.target.id
       })
     },
     { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
   )
 
-  navItems.forEach(({ id }) => {
+  navItems
+    .filter(({ id }) => id !== 'subsidiaries')
+    .forEach(({ id }) => {
     const el = document.getElementById(id)
     if (el) observer.observe(el)
   })
@@ -93,6 +125,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('jiangyao:overview-active', handleOverviewActive)
   if (observer) observer.disconnect()
 })
 </script>

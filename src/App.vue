@@ -8,10 +8,7 @@
     <template v-if="introComplete">
       <NavBar />
       <HeroSection />
-      <BlueprintSection />
-      <BackgroundSection />
-      <CompanySection />
-      <SubsidiariesSection />
+      <GroupOverviewHorizontal />
       <ParkSection />
       <ParkGallery />
       <BusinessSection />
@@ -30,10 +27,7 @@ import IntroLoader from './components/IntroLoader.vue'
 import BackToTop from './components/BackToTop.vue'
 import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
-import BlueprintSection from './components/BlueprintSection.vue'
-import BackgroundSection from './components/BackgroundSection.vue'
-import CompanySection from './components/CompanySection.vue'
-import SubsidiariesSection from './components/SubsidiariesSection.vue'
+import GroupOverviewHorizontal from './components/GroupOverviewHorizontal.vue'
 import ParkSection from './components/ParkSection.vue'
 import ParkGallery from './components/ParkGallery.vue'
 import BusinessSection from './components/BusinessSection.vue'
