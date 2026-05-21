@@ -14,7 +14,7 @@ export function initScrollReveal() {
         }
       })
     },
-    { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    { threshold: 0.12, rootMargin: '0px 0px -12% 0px' }
   )
 
   document.querySelectorAll('.slide-up, .slide-left, .slide-right, .fade-in, .scale-in').forEach((el) => {

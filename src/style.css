@@ -25,6 +25,14 @@ body {
   width: 100%;
 }
 
+:root {
+  --reveal-duration: 520ms;
+  --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --reveal-distance: 38px;
+  --reveal-scale: 0.96;
+  --reveal-stagger-step: 80ms;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
@@ -40,41 +48,57 @@ body {
 /* Slide-in animations */
 .slide-up {
   opacity: 0;
-  transform: translateY(60px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--reveal-duration) var(--reveal-ease),
+    transform var(--reveal-duration) var(--reveal-ease);
+  will-change: opacity, transform;
 }
 .slide-left {
   opacity: 0;
-  transform: translateX(-60px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateX(calc(var(--reveal-distance) * -1));
+  transition:
+    opacity var(--reveal-duration) var(--reveal-ease),
+    transform var(--reveal-duration) var(--reveal-ease);
+  will-change: opacity, transform;
 }
 .slide-right {
   opacity: 0;
-  transform: translateX(60px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateX(var(--reveal-distance));
+  transition:
+    opacity var(--reveal-duration) var(--reveal-ease),
+    transform var(--reveal-duration) var(--reveal-ease);
+  will-change: opacity, transform;
 }
 .fade-in {
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity var(--reveal-duration) var(--reveal-ease);
+  will-change: opacity;
 }
 .scale-in {
   opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: scale(var(--reveal-scale));
+  transition:
+    opacity var(--reveal-duration) var(--reveal-ease),
+    transform var(--reveal-duration) var(--reveal-ease);
+  will-change: opacity, transform;
 }
 
 .is-visible {
   opacity: 1 !important;
   transform: none !important;
+  will-change: auto;
 }
 
 /* Delay utilities */
-.delay-100 { transition-delay: 0.1s; }
-.delay-200 { transition-delay: 0.2s; }
-.delay-300 { transition-delay: 0.3s; }
-.delay-400 { transition-delay: 0.4s; }
-.delay-500 { transition-delay: 0.5s; }
-.delay-600 { transition-delay: 0.6s; }
+.delay-100 { transition-delay: var(--reveal-stagger-step); }
+.delay-150 { transition-delay: calc(var(--reveal-stagger-step) * 1.5); }
+.delay-200 { transition-delay: calc(var(--reveal-stagger-step) * 2); }
+.delay-300 { transition-delay: calc(var(--reveal-stagger-step) * 3); }
+.delay-400 { transition-delay: calc(var(--reveal-stagger-step) * 4); }
+.delay-450 { transition-delay: calc(var(--reveal-stagger-step) * 4.5); }
+.delay-500 { transition-delay: calc(var(--reveal-stagger-step) * 5); }
+.delay-600 { transition-delay: calc(var(--reveal-stagger-step) * 6); }
 
 /* Section title */
 .section-tag {
@@ -369,18 +393,22 @@ body {
 .word-reveal .word {
   display: inline-block;
   opacity: 0;
-  transform: translateY(30px) rotate(3deg);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(calc(var(--reveal-distance) * 0.65)) rotate(2deg);
+  transition:
+    opacity var(--reveal-duration) var(--reveal-ease),
+    transform var(--reveal-duration) var(--reveal-ease);
+  will-change: opacity, transform;
 }
 .word-reveal.is-visible .word {
   opacity: 1;
   transform: none;
+  will-change: auto;
 }
-.word-reveal.is-visible .word:nth-child(1) { transition-delay: 0.05s; }
-.word-reveal.is-visible .word:nth-child(2) { transition-delay: 0.15s; }
-.word-reveal.is-visible .word:nth-child(3) { transition-delay: 0.25s; }
-.word-reveal.is-visible .word:nth-child(4) { transition-delay: 0.35s; }
-.word-reveal.is-visible .word:nth-child(5) { transition-delay: 0.45s; }
+.word-reveal.is-visible .word:nth-child(1) { transition-delay: 0ms; }
+.word-reveal.is-visible .word:nth-child(2) { transition-delay: var(--reveal-stagger-step); }
+.word-reveal.is-visible .word:nth-child(3) { transition-delay: calc(var(--reveal-stagger-step) * 2); }
+.word-reveal.is-visible .word:nth-child(4) { transition-delay: calc(var(--reveal-stagger-step) * 3); }
+.word-reveal.is-visible .word:nth-child(5) { transition-delay: calc(var(--reveal-stagger-step) * 4); }
 
 /* Scroll progress bar */
 .scroll-progress {
@@ -396,15 +424,37 @@ body {
 /* Stagger children animation */
 .stagger-children > * {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(calc(var(--reveal-distance) * 0.65));
+  transition:
+    opacity var(--reveal-duration) var(--reveal-ease),
+    transform var(--reveal-duration) var(--reveal-ease);
+  will-change: opacity, transform;
 }
-.stagger-children.is-visible > *:nth-child(1) { opacity:1; transform:none; transition-delay: 0.05s; }
-.stagger-children.is-visible > *:nth-child(2) { opacity:1; transform:none; transition-delay: 0.15s; }
-.stagger-children.is-visible > *:nth-child(3) { opacity:1; transform:none; transition-delay: 0.25s; }
-.stagger-children.is-visible > *:nth-child(4) { opacity:1; transform:none; transition-delay: 0.35s; }
-.stagger-children.is-visible > *:nth-child(5) { opacity:1; transform:none; transition-delay: 0.45s; }
-.stagger-children.is-visible > *:nth-child(6) { opacity:1; transform:none; transition-delay: 0.55s; }
+.stagger-children.is-visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0ms; will-change: auto; }
+.stagger-children.is-visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: var(--reveal-stagger-step); will-change: auto; }
+.stagger-children.is-visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: calc(var(--reveal-stagger-step) * 2); will-change: auto; }
+.stagger-children.is-visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: calc(var(--reveal-stagger-step) * 3); will-change: auto; }
+.stagger-children.is-visible > *:nth-child(5) { opacity: 1; transform: none; transition-delay: calc(var(--reveal-stagger-step) * 4); will-change: auto; }
+.stagger-children.is-visible > *:nth-child(6) { opacity: 1; transform: none; transition-delay: calc(var(--reveal-stagger-step) * 5); will-change: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .slide-up,
+  .slide-left,
+  .slide-right,
+  .fade-in,
+  .scale-in,
+  .word-reveal .word,
+  .stagger-children > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+}
 
 /* Shimmer on text */
 @keyframes shimmer {

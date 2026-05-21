@@ -230,7 +230,7 @@
       </div>
 
       <div
-        class="absolute bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 md:bottom-6"
+        class="absolute bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 md:bottom-[94px]"
       >
         <button
           type="button"
