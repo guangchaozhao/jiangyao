@@ -102,17 +102,18 @@
       <!-- CTA -->
       <div class="slide-up delay-400 flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
         <a href="#company"
-          v-magnetic="0.4"
-          class="cyber-btn group relative px-10 py-3.5 bg-gradient-to-r from-electric to-cyber text-white
+          class="cyber-btn group relative px-10 py-3.5 border border-electric/35 bg-white/[0.04] text-slate-100
                  font-esports font-bold text-sm rounded-full
-                 hover:shadow-[0_0_40px_rgba(0,212,255,0.5)] transition-all duration-300 cursor-pointer overflow-hidden">
+                 hover:border-cyber hover:bg-cyber/12 hover:text-white hover:shadow-[0_0_22px_rgba(0,212,255,0.22)]
+                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber/60
+                 transition-all duration-300 cursor-pointer overflow-hidden">
           了解集团
           <span class="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>
         </a>
         <a href="#contact"
-          v-magnetic="0.4"
-          class="cyber-btn px-10 py-3.5 border border-cyber/50 text-cyber font-esports font-bold text-sm
-                 rounded-full hover:bg-cyber/10 hover:border-cyber hover:shadow-[0_0_20px_rgba(0,212,255,0.2)]
+          class="cyber-btn px-10 py-3.5 border border-cyber/35 bg-transparent text-cyber/85 font-esports font-bold text-sm
+                 rounded-full hover:bg-cyber/10 hover:border-cyber hover:text-white hover:shadow-[0_0_18px_rgba(0,212,255,0.18)]
+                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber/60
                  transition-all duration-300 cursor-pointer overflow-hidden">
           合作洽谈
         </a>
@@ -218,7 +219,7 @@
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { video } from '../config/oss'
 const videoSrc = video.yuanqu
-const heroPoster = `${videoSrc}?x-oss-process=video/snapshot,t_1000,f_jpg,w_1280,m_fast`
+const heroPoster = video.yuanquPoster
 
 const starCanvas = ref(null)
 const heroThumb = ref(null)

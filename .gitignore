@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.env
 
 node_modules
 dist
@@ -19,6 +20,7 @@ src/picture.zip
 src/showcase-videos/*
 src/avatar-previews/*
 src/esports/*
+data/news-manifest.json
 
 # Editor directories and files
 .vscode/*

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "sync:oss": "node scripts/sync-oss.js"
+    "sync:oss": "node scripts/sync-oss.js",
+    "sync:wechat-news": "node scripts/sync-wechat-news.js"
   },
   "dependencies": {
     "ali-oss": "^6.23.0",

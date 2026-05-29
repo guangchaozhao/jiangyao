@@ -10,6 +10,7 @@ export const OSS_PICTURE = `${OSS_BASE}/picture`
 export const OSS_VIDEOS  = `${OSS_BASE}/showcase-videos`
 export const OSS_AVATARS = `${OSS_BASE}/avatar-previews`
 export const OSS_ESPORTS = `${OSS_BASE}/esports`
+export const OSS_NEWS    = `${OSS_BASE}/news`
 
 // 网页图片
 export const img = {
@@ -31,6 +32,17 @@ export const img = {
 // 首页宣传片
 export const video = {
   yuanqu: `${OSS_VIDEOS}/yuanqu.mp4`,
+  yuanquPoster: `${OSS_VIDEOS}/yuanqu.mp4?x-oss-process=video/snapshot,t_0,f_jpg,w_1280,m_fast`,
+}
+
+// 新闻中心
+// manifest 来源：oss://jiangyao-site-2026/news/manifest.json
+// 图片归档：oss://jiangyao-site-2026/news/images/
+// 视频手动归档：oss://jiangyao-site-2026/news/videos/
+export const news = {
+  manifest: `${OSS_NEWS}/manifest.json`,
+  images: `${OSS_NEWS}/images`,
+  videos: `${OSS_NEWS}/videos`,
 }
 
 // 电竞俱乐部战队影像库（EsportsGalleryModal 使用）
