@@ -4,6 +4,7 @@
       <div
         v-if="show"
         ref="modalEl"
+        data-lenis-prevent
         class="fixed inset-0 z-[200] flex flex-col bg-[#020810]/97 text-white backdrop-blur-md"
         tabindex="0"
         @keydown.esc="$emit('close')"
@@ -240,6 +241,7 @@ import {
   categoryLabel,
   fetchPublicShowcaseVideos,
 } from '../lib/publicShowcase'
+import { lockPageScroll, unlockPageScroll } from '../composables/usePageScrollLock'
 
 const props = defineProps({ show: Boolean })
 defineEmits(['close'])
@@ -367,17 +369,17 @@ watch(activeCategory, () => {
 
 watch(() => props.show, (visible) => {
   if (visible) {
-    document.body.style.overflow = 'hidden'
+    lockPageScroll()
     nextTick(() => modalEl.value?.focus())
     void loadVideos()
   } else {
-    document.body.style.overflow = ''
+    unlockPageScroll()
     closeVideoPlayer()
   }
 })
 
 onBeforeUnmount(() => {
-  document.body.style.overflow = ''
+  unlockPageScroll()
   closeVideoPlayer()
 })
 </script>

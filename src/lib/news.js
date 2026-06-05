@@ -44,6 +44,19 @@ export const formatNewsDate = (value) => {
   }).format(new Date(normalized))
 }
 
+const toNewsTime = (value) => {
+  const normalized = normalizeDate(value)
+  if (!normalized) return 0
+  return new Date(normalized).getTime()
+}
+
+export const sortNewsByLatest = (items) =>
+  [...items].sort((a, b) => {
+    const timeDiff = toNewsTime(b.publishedAt) - toNewsTime(a.publishedAt)
+    if (timeDiff !== 0) return timeDiff
+    return Number(b.order || 0) - Number(a.order || 0)
+  })
+
 const stripHtml = (value) =>
   String(value || '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -104,6 +117,6 @@ export async function fetchGroupNews() {
   const manifest = await response.json()
   const items = Array.isArray(manifest) ? manifest : manifest?.articles
   return Array.isArray(items)
-    ? items.map(normalizeArticle).filter(Boolean)
+    ? sortNewsByLatest(items.map(normalizeArticle).filter(Boolean))
     : []
 }

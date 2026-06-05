@@ -2,6 +2,7 @@
   <Teleport to="body">
     <Transition name="gallery-modal">
       <div v-if="show"
+        data-lenis-prevent
         class="fixed inset-0 z-[200] flex flex-col bg-[#020810]/97 backdrop-blur-md"
         @keydown.esc="$emit('close')" tabindex="0" ref="modalEl">
 
@@ -277,8 +278,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { OSS_ESPORTS, esportsMedia as fallbackEsportsMedia } from '../config/oss'
+import { lockPageScroll, unlockPageScroll } from '../composables/usePageScrollLock'
 
 const props = defineProps({ show: Boolean })
 defineEmits(['close'])
@@ -469,13 +471,18 @@ function next() {
 
 watch(() => props.show, (v) => {
   if (v) {
-    document.body.style.overflow = 'hidden'
+    lockPageScroll()
     nextTick(() => modalEl.value?.focus())
     void loadMedia(true)
   } else {
-    document.body.style.overflow = ''
+    unlockPageScroll()
     closeViewer()
   }
+})
+
+onBeforeUnmount(() => {
+  unlockPageScroll()
+  closeViewer()
 })
 </script>
 
