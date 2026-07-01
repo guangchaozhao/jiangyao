@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "description": "官网新闻来源清单。新增公众号文章时，只在 articles 里追加 url、order、category，不要覆盖旧文章，然后运行 npm run sync:wechat-news。",
+  "articles": [
+    {
+      "order": 1,
+      "category": "集团新闻",
+      "title": "星辰出征，竞逐烽火",
+      "url": "https://mp.weixin.qq.com/s/_IAm-V4H3yzmu2Jsnq9a8g"
+    },
+    {
+      "order": 2,
+      "category": "集团新闻",
+      "title": "竞逐亚运，为国出征",
+      "url": "https://mp.weixin.qq.com/s/aBElLTKu5ZIQUfhAKqYw2A"
+    },
+    {
+      "order": 3,
+      "category": "合作交流",
+      "title": "重磅官宣｜江曜擎天× 电竞粤超达成深度战略合作",
+      "url": "https://mp.weixin.qq.com/s/N7V4FQfmf5Tw0GAqzEoaUQ"
+    },
+    {
+      "order": 4,
+      "category": "合作交流",
+      "title": "江家毅董事长接受羊城晚报专访",
+      "url": "https://mp.weixin.qq.com/s/wdtbYCKXBfYnQUPl0vImyA"
+    },
+    {
+      "order": 5,
+      "category": "合作交流",
+      "title": "官宣｜江曜擎天受邀参与央视《品牌强国说》",
+      "url": "https://mp.weixin.qq.com/s/zSXG826jVUsJrDCN5yf7Jg"
+    },
+    {
+      "order": 6,
+      "category": "合作交流",
+      "title": "江曜擎天电竞发展（广东）有限公司马天元总裁接受羊城晚报专访",
+      "url": "https://mp.weixin.qq.com/s/mIIVARwCZRnD0_GhwvXgag"
+    },
+    {
+      "order": 7,
+      "category": "合作交流",
+      "title": "江曜擎天助力北川自治区教育公益｜A I数智赋能羌乡，电竞筑梦少年成长。",
+      "url": "https://mp.weixin.qq.com/s/leuBxdLOC1atMD-wEyuHVA"
+    },
+    {
+      "order": 8,
+      "category": "集团新闻",
+      "title": "江曜擎天中山电竞战队扶持计划",
+      "url": "https://mp.weixin.qq.com/s/5EsLq9i_7ny9nyYmSlYHhA"
+    },
+    {
+      "order": 9,
+      "category": "集团新闻",
+      "title": "客场破局，双冠加冕！中山战队强势横扫电竞粤超佛山站",
+      "url": "https://mp.weixin.qq.com/s/bAESAYq52QWBv8m8RRL_gg"
+    },
+    {
+      "order": 10,
+      "category": "集团新闻",
+      "title": "肇庆双冠！中山战队闪耀粤超赛场",
+      "url": "https://mp.weixin.qq.com/s/ykdrJXhNMeg9z10ibiQvNA"
+    },
+    {
+      "order": 11,
+      "category": "合作交流",
+      "title": "中山市队参与亚运会国家队陪练——以硬实力助力国家队为国争光",
+      "url": "https://mp.weixin.qq.com/s/obG7Y1AdSQdZ1W62m9JlJQ"
+    },
+    {
+      "order": 12,
+      "category": "领导关怀",
+      "title": "热烈欢迎雅安考察团莅临江曜擎天调研交流",
+      "url": "https://mp.weixin.qq.com/s/weTlvSNWNuxUOa7kiOQKVQ"
+    },
+    {
+      "order": 13,
+      "category": "合作交流",
+      "title": "太阳神集团高级副总裁周湘健一行到访我司洽谈电商合作",
+      "url": "https://mp.weixin.qq.com/s/bPaOQey42cK30QpuhETxrQ"
+    },
+    {
+      "order": 14,
+      "category": "集团新闻",
+      "title": "从电竞到动漫，江曜擎天加速拓展数字文娱新生态",
+      "url": "https://mp.weixin.qq.com/s/95XNvvPycvidcoZA1aD7Cg"
+    },
+    {
+      "order": 15,
+      "category": "合作交流",
+      "title": "赴京签约！江曜擎天与火山引擎达成千万级TokenAIGC合作",
+      "url": "https://mp.weixin.qq.com/s/p8ICZ6A9HgJT-_JvOVdtYQ"
+    },
+    {
+      "order": 16,
+      "category": "合作交流",
+      "title": "人民数据来访江曜擎天，共谋产业数字化合作",
+      "url": "https://mp.weixin.qq.com/s/WNv4ZnVLyv7o1vI0IXMuug"
+    },
+    {
+      "order": 17,
+      "category": "集团新闻",
+      "title": "江曜擎天首席科学家许洪波教授谈AI：AI时代，所有生意都值得重来一遍！",
+      "url": "https://mp.weixin.qq.com/s/OHKlu9TIX7no8Kx8nuHQtQ"
+    },
+    {
+      "order": 18,
+      "category": "合作交流",
+      "title": "江曜擎天携手中山火炬职院，共建AIGC电竞教育产教融合新模式",
+      "url": "https://mp.weixin.qq.com/s/36QAo_K8a2FnmltVs3KjMg"
+    },
+    {
+      "order": 19,
+      "category": "合作交流",
+      "title": "现场签约！江曜擎天走进中山产业现场",
+      "url": "https://mp.weixin.qq.com/s/A2zFvIJBWFaUjc7Fg4iQ_A"
+    }
+  ]
+}

@@ -6,10 +6,11 @@
  *   npm run sync:wechat-news -- --feed-url "http://127.0.0.1:4000/feeds/MP_xxx.json?mode=fulltext&limit=20"
  *   npm run sync:wechat-news -- --article-url "https://mp.weixin.qq.com/s/xxx"
  *   npm run sync:wechat-news -- --article-urls "https://mp.weixin.qq.com/s/xxx,https://mp.weixin.qq.com/s/yyy"
+ *   npm run sync:wechat-news
  *   npm run sync:wechat-news -- --no-upload
  *
  * 需要环境变量：
- *   WECHAT_NEWS_ARTICLE_URLS 或 WECHAT_NEWS_FEED_URL
+ *   默认读取根目录 news-sources.json；也可配置 WECHAT_NEWS_ARTICLE_URLS 或 WECHAT_NEWS_FEED_URL
  *   OSS_ACCESS_KEY_ID / OSS_ACCESS_KEY_SECRET
  */
 
@@ -28,6 +29,7 @@ const DEFAULT_OSS_REGION = 'oss-cn-shenzhen'
 const DEFAULT_OSS_BASE = 'https://jiangyao-site-2026.oss-cn-shenzhen.aliyuncs.com'
 const NEWS_PREFIX = 'news'
 const LOCAL_OUTPUT = path.join(ROOT, 'data', 'news-manifest.json')
+const DEFAULT_SOURCES_FILE = path.join(ROOT, 'news-sources.json')
 const NEWS_CATEGORY_LABELS = {
   group: '集团新闻',
   care: '领导关怀',
@@ -74,6 +76,34 @@ function argValue(name) {
   if (exact) return exact.slice(name.length + 1)
   const index = args.indexOf(name)
   return index >= 0 ? args[index + 1] : undefined
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function fetchTextWithRetry(url, options, retries = 3, timeoutMs = 30000) {
+  let lastError
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      const response = await fetch(url, { ...options, signal: controller.signal })
+      if (!response.ok) {
+        throw new Error(`request failed: ${response.status}`)
+      }
+      return await response.text()
+    } catch (error) {
+      lastError = error
+      if (attempt >= retries) break
+      const delay = 800 * attempt
+      console.log(`  retry ${attempt}/${retries - 1}: ${url} - ${error.message}`)
+      await sleep(delay)
+    } finally {
+      clearTimeout(timeout)
+    }
+  }
+  throw lastError
 }
 
 function normalizeBase(value) {
@@ -346,6 +376,41 @@ function articleUrlsFromText(value) {
   ))
 }
 
+function readJsonFile(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) return null
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+}
+
+function resolveSourcesFilePath() {
+  const explicit = argValue('--sources-file') || env.JIANGYAO_WECHAT_NEWS_SOURCES_FILE || env.WECHAT_NEWS_SOURCES_FILE
+  return explicit ? path.resolve(ROOT, explicit) : DEFAULT_SOURCES_FILE
+}
+
+function normalizeSourceArticlesFromFile(filePath) {
+  const payload = readJsonFile(filePath)
+  if (!payload) return []
+
+  const rawArticles = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload.articles)
+      ? payload.articles
+      : []
+
+  return rawArticles
+    .map((entry, index) => {
+      const article = typeof entry === 'string' ? { url: entry } : entry
+      const url = String(article?.url || article?.originalUrl || '').trim()
+      if (!url || article?.enabled === false) return null
+      return {
+        url,
+        title: String(article.title || '').trim(),
+        order: Number.isFinite(Number(article.order)) ? Number(article.order) : index + 1,
+        category: normalizeCategoryKey(article.category || article.categoryLabel),
+      }
+    })
+    .filter(Boolean)
+}
+
 function articleOrderFromArgs(index) {
   const orders = String(argValue('--article-orders') || env.WECHAT_NEWS_ARTICLE_ORDERS || '')
     .split(/[\n,，]+/)
@@ -364,19 +429,15 @@ function articleCategoryFromArgs(index) {
   return categories[index] || ''
 }
 
-async function fetchArticleItemFromUrl(url, index) {
-  const response = await fetch(url, {
+async function fetchArticleItemFromUrl(source, index) {
+  const sourceMeta = typeof source === 'string' ? { url: source } : source
+  const url = String(sourceMeta?.url || '').trim()
+  const html = await fetchTextWithRetry(url, {
     headers: {
       'User-Agent': 'Mozilla/5.0 AppleWebKit/537.36 Chrome/120 Safari/537.36',
       Referer: 'https://mp.weixin.qq.com/',
     },
   })
-
-  if (!response.ok) {
-    throw new Error(`article request failed: ${response.status} ${url}`)
-  }
-
-  const html = await response.text()
   const contentRaw = extractElementById(html, 'js_content')
   const marked = markWeChatVideoEmbeds(contentRaw, html)
   const contentHtml = cleanWeChatArticleHtml(marked.contentHtml)
@@ -392,11 +453,11 @@ async function fetchArticleItemFromUrl(url, index) {
   return {
     id: url,
     url,
-    order: articleOrderFromArgs(index),
+    order: Number.isFinite(Number(sourceMeta.order)) ? Number(sourceMeta.order) : articleOrderFromArgs(index),
     title,
     content_html: contentHtml,
     summary: stripHtml(contentHtml).slice(0, 140),
-    category: articleCategoryFromArgs(index),
+    category: normalizeCategoryKey(sourceMeta.category) || articleCategoryFromArgs(index),
     image: extractImageUrls(contentHtml)[0] || '',
     author: { name: sourceName },
     date_published: publishedAt,
@@ -493,6 +554,7 @@ async function objectExists(client, key, size) {
 async function mirrorImage(client, articleId, sourceUrl, index) {
   if (!sourceUrl || !/^https?:\/\//i.test(sourceUrl)) return sourceUrl
   if (sourceUrl.includes(`${readUploadConfig().baseUrl}/${NEWS_PREFIX}/`)) return sourceUrl
+  if (!client) return sourceUrl
 
   let response
   try {
@@ -517,8 +579,6 @@ async function mirrorImage(client, articleId, sourceUrl, index) {
   const ext = extensionFrom(sourceUrl, contentType)
   const key = `${NEWS_PREFIX}/images/${articleId}/${String(index + 1).padStart(2, '0')}-${hash(sourceUrl, 10)}${ext}`
   const publicUrl = `${readUploadConfig().baseUrl}/${key.split('/').map(encodeURIComponent).join('/')}`
-
-  if (!client) return sourceUrl
 
   if (await objectExists(client, key, buffer.length)) return publicUrl
 
@@ -683,11 +743,12 @@ async function normalizeArticle(client, item, index, feed) {
   }
 }
 
-async function loadItemsFromArticleUrls(urls) {
+async function loadItemsFromArticleSources(sources, sourceInfo = {}) {
   const items = []
-  for (let i = 0; i < urls.length; i += 1) {
-    console.log(`fetch article ${i + 1}/${urls.length}: ${urls[i]}`)
-    items.push(await fetchArticleItemFromUrl(urls[i], i))
+  for (let i = 0; i < sources.length; i += 1) {
+    const url = typeof sources[i] === 'string' ? sources[i] : sources[i]?.url
+    console.log(`fetch article ${i + 1}/${sources.length}: ${url}`)
+    items.push(await fetchArticleItemFromUrl(sources[i], i))
   }
 
   return {
@@ -695,7 +756,8 @@ async function loadItemsFromArticleUrls(urls) {
     items,
     source: {
       type: 'article-urls',
-      articleUrls: urls,
+      articleUrls: sources.map((source) => typeof source === 'string' ? source : source.url),
+      ...sourceInfo,
     },
   }
 }
@@ -747,25 +809,45 @@ async function uploadManifest(client, manifest) {
 }
 
 async function main() {
-  const feedUrl = argValue('--feed-url') || env.JIANGYAO_WECHAT_NEWS_FEED_URL || env.WECHAT_NEWS_FEED_URL
-  const articleUrls = articleUrlsFromText(
+  const cliFeedUrl = argValue('--feed-url')
+  const envFeedUrl = env.JIANGYAO_WECHAT_NEWS_FEED_URL || env.WECHAT_NEWS_FEED_URL
+  const cliArticleUrls = articleUrlsFromText(
     [
       argValue('--article-url'),
       argValue('--article-urls'),
+    ].filter(Boolean).join('\n'),
+  )
+  const envArticleUrls = articleUrlsFromText(
+    [
       env.JIANGYAO_WECHAT_NEWS_ARTICLE_URLS,
       env.WECHAT_NEWS_ARTICLE_URLS,
     ].filter(Boolean).join('\n'),
   )
+  const sourcesFilePath = resolveSourcesFilePath()
+  const sourceFileArticles = !cliFeedUrl && cliArticleUrls.length === 0
+    ? normalizeSourceArticlesFromFile(sourcesFilePath)
+    : []
+  const feedUrl = cliFeedUrl || (sourceFileArticles.length === 0 ? envFeedUrl : '')
+  const articleSources = cliArticleUrls.length > 0
+    ? cliArticleUrls
+    : sourceFileArticles.length > 0
+      ? sourceFileArticles
+      : envArticleUrls
 
-  if (!feedUrl && articleUrls.length === 0) {
-    console.log('缺少公众号来源：请传 --article-url / --article-urls，或配置 WECHAT_NEWS_ARTICLE_URLS / WECHAT_NEWS_FEED_URL')
+  if (!feedUrl && articleSources.length === 0) {
+    console.log('缺少公众号来源：请在 news-sources.json 维护文章链接，或传 --article-url / --article-urls，或配置 WECHAT_NEWS_ARTICLE_URLS / WECHAT_NEWS_FEED_URL')
     process.exitCode = 1
     return
   }
 
   console.log(`oss target: oss://${readUploadConfig().bucket}/${NEWS_PREFIX}/`)
-  const feed = articleUrls.length > 0
-    ? await loadItemsFromArticleUrls(articleUrls)
+  if (sourceFileArticles.length > 0 && cliArticleUrls.length === 0) {
+    console.log(`news sources: ${sourcesFilePath}`)
+  }
+  const feed = articleSources.length > 0
+    ? await loadItemsFromArticleSources(articleSources, sourceFileArticles.length > 0 && cliArticleUrls.length === 0
+      ? { sourceFile: path.relative(ROOT, sourcesFilePath).replace(/\\/g, '/') }
+      : {})
     : await loadItemsFromWeweFeed(feedUrl)
   const items = feed.items
   const client = await createOssClient()
