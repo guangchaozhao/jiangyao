@@ -174,7 +174,10 @@
             </div>
 
             <!-- 移动:2 列方形,4 张一屏看完;桌面:4 列 3:4 portrait,人像完整 -->
-            <div class="grid grid-cols-2 gap-2.5 sm:gap-4 xl:grid-cols-4">
+            <div
+              class="grid grid-cols-2 gap-2.5 sm:gap-4"
+              :class="managementTeamGridClass"
+            >
               <div v-for="member in team" :key="member.name" class="glass-card overflow-hidden rounded-2xl">
                 <div class="relative aspect-square sm:aspect-[3/4] bg-[#0A1628]">
                   <img
@@ -269,6 +272,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { img } from '../config/oss'
+import { managementTeam, managementTeamGridClass } from '../config/management-team'
 
 const sectionRef = ref(null)
 const currentPanel = ref(0)
@@ -389,36 +393,7 @@ const visions = [
   { title: '享誉世界', desc: '打造国际顶级品牌，提升中国电竞影响力。' },
 ]
 
-const team = [
-  {
-    name: '马天元',
-    photo: img.tianyuan,
-    pos: 'center 15%',
-    role: 'AG电竞创始人 / SC电竞俱乐部创始人',
-    tags: ['中国电竞开拓者', '名人堂入选者', '30年经验'],
-  },
-  {
-    name: '李小刚',
-    photo: img.xiaogang,
-    pos: 'center 10%',
-    role: 'SC俱乐部运营执行总裁',
-    tags: ['星竞威武集团', '董事长助理', '纳斯达克上市'],
-  },
-  {
-    name: '张晖',
-    photo: img.zhanghui,
-    pos: 'center 10%',
-    role: 'Doud AI超级视频工厂创始人',
-    tags: ['原字节跳动', '商务BD', '3.5亿+曝光'],
-  },
-  {
-    name: '张晨晰',
-    photo: img.chengxi,
-    pos: 'center 10%',
-    role: '武汉星竞威武集团直播事业部总监',
-    tags: ['10年直播经验', '月流水1300万', '500+主播管理'],
-  },
-]
+const team = managementTeam
 
 watch(currentPanel, emitOverviewActive)
 

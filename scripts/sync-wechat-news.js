@@ -83,16 +83,21 @@ function sleep(ms) {
 }
 
 async function fetchTextWithRetry(url, options, retries = 3, timeoutMs = 30000) {
+  const { validateText, ...fetchOptions } = options || {}
   let lastError
   for (let attempt = 1; attempt <= retries; attempt += 1) {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), timeoutMs)
     try {
-      const response = await fetch(url, { ...options, signal: controller.signal })
+      const response = await fetch(url, { ...fetchOptions, signal: controller.signal })
       if (!response.ok) {
         throw new Error(`request failed: ${response.status}`)
       }
-      return await response.text()
+      const text = await response.text()
+      if (validateText && !validateText(text)) {
+        throw new Error('公众号返回了无正文的临时页面')
+      }
+      return text
     } catch (error) {
       lastError = error
       if (attempt >= retries) break
@@ -437,6 +442,7 @@ async function fetchArticleItemFromUrl(source, index) {
       'User-Agent': 'Mozilla/5.0 AppleWebKit/537.36 Chrome/120 Safari/537.36',
       Referer: 'https://mp.weixin.qq.com/',
     },
+    validateText: (pageHtml) => Boolean(extractElementById(pageHtml, 'js_content').trim()),
   })
   const contentRaw = extractElementById(html, 'js_content')
   const marked = markWeChatVideoEmbeds(contentRaw, html)
@@ -447,6 +453,7 @@ async function fetchArticleItemFromUrl(source, index) {
     : ''
   const title = getFirstMatch(html, /<h1\b[^>]*id=(["'])activity-name\1[^>]*>([\s\S]*?)<\/h1>/i)
     || getFirstMatch(html, /<span\b[^>]*class=(["'])[^"']*js_title_inner[^"']*\1[^>]*>([\s\S]*?)<\/span>/i)
+    || sourceMeta.title
     || `公众号图文 ${index + 1}`
   const sourceName = getFirstMatch(html, /<a\b[^>]*id=(["'])js_name\1[^>]*>([\s\S]*?)<\/a>/i) || '江曜擎天'
 

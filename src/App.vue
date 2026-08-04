@@ -39,17 +39,55 @@ import ContactSection from './components/ContactSection.vue'
 import FooterSection from './components/FooterSection.vue'
 import { initScrollReveal } from './composables/useScrollReveal'
 
-const introComplete = ref(false)
+const initialHash = typeof window !== 'undefined' ? window.location.hash : ''
+const introComplete = ref(initialHash === '#contact')
 const scrollRatio = ref(0)
 
 let lenis = null
 let rafId = null
+let initialHashScrollScheduled = false
 const prefersReducedMotion = typeof window !== 'undefined'
   && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 function onIntroDone() {
   introComplete.value = true
-  nextTick(() => initScrollReveal())
+  nextTick(() => {
+    initScrollReveal()
+    scheduleInitialHashScroll()
+  })
+}
+
+function scrollToLocationHash() {
+  const sectionId = window.location.hash.slice(1)
+  if (!sectionId) return
+
+  const target = document.getElementById(sectionId)
+  if (!target) return
+
+  requestAnimationFrame(() => {
+    if (lenis) {
+      const offset = sectionId === 'contact' ? 0 : -20
+      lenis.scrollTo(target, { offset, immediate: true })
+      return
+    }
+    target.scrollIntoView({ block: 'start' })
+  })
+}
+
+function scheduleInitialHashScroll() {
+  if (!window.location.hash || initialHashScrollScheduled) return
+  initialHashScrollScheduled = true
+
+  const scrollOnce = () => {
+    const fontsReady = document.fonts?.ready || Promise.resolve()
+    fontsReady.then(scrollToLocationHash)
+  }
+
+  if (document.readyState === 'complete') {
+    scrollOnce()
+    return
+  }
+  window.addEventListener('load', scrollOnce, { once: true })
 }
 
 function setupLenis() {
@@ -106,6 +144,16 @@ function setupLenis() {
 }
 
 let cleanupScroll = null
-onMounted(() => { cleanupScroll = setupLenis() })
-onUnmounted(() => { cleanupScroll?.() })
+onMounted(() => {
+  cleanupScroll = setupLenis()
+  if (introComplete.value) {
+    nextTick(() => {
+      initScrollReveal()
+      scheduleInitialHashScroll()
+    })
+  }
+})
+onUnmounted(() => {
+  cleanupScroll?.()
+})
 </script>

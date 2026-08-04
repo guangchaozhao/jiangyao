@@ -12,7 +12,7 @@
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="grid md:grid-cols-2 gap-6" :class="managementTeamGridClass">
         <div v-for="(member, i) in team" :key="member.name"
           class="glass-card neon-hover rounded-sm relative hud-corner group hover:-translate-y-2 transition-all duration-300 slide-up overflow-hidden"
           :class="`delay-${(i+1)*100}`">
@@ -72,44 +72,7 @@
 </template>
 
 <script setup>
-import { img } from '../config/oss'
-const tianyuan = img.tianyuan
-const xiaogang = img.xiaogang
-const zhanghui = img.zhanghui
-const zhengxi  = img.chengxi
+import { managementTeam, managementTeamGridClass } from '../config/management-team'
 
-const team = [
-  {
-    name: '马天元',
-    photo: tianyuan,
-    pos: 'center 15%',
-    role: 'AG电竞创始人 / SC电竞俱乐部创始人',
-    tags: ['中国电竞开拓者', '名人堂入选者', '30年经验'],
-    desc: '中国电竞历史上第一位获得电竞世界冠军的行业代表人物，对电竞俱乐部组建与产业发展拥有核心行业资源。',
-  },
-  {
-    name: '李小刚',
-    photo: xiaogang,
-    pos: 'center 10%',
-    role: 'SC俱乐部运营执行总裁',
-    tags: ['星竞威武集团', '董事长助理', '纳斯达克上市'],
-    desc: '武汉星竞威武集团「中国电竞第一股」（NPG），2024年7月纳斯达克上市。具备以上市为导向的集团化运作管理能力。',
-  },
-  {
-    name: '张晖',
-    photo: zhanghui,
-    pos: 'center 10%',
-    role: 'Doud AI超级视频工厂创始人',
-    tags: ['原字节跳动', '商务BD', '3.5亿+曝光'],
-    desc: '原字节跳动商务BD，参与运营清华大学「乡村振兴领头雁」计划。作品累计曝光超3.5亿次。',
-  },
-  {
-    name: '张晨晰',
-    photo: zhengxi,
-    pos: 'center 10%',
-    role: '武汉星竞威武集团直播事业部总监',
-    tags: ['10年直播经验', '月流水1300万', '500+主播管理'],
-    desc: '10年直播行业全链路运营与管理经验，管理团队创下月度流水1300万元业绩，累计运营管理主播超500人。',
-  },
-]
+const team = managementTeam
 </script>
